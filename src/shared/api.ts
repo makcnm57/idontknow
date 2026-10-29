@@ -29,6 +29,13 @@ export interface ScreenDrawApi {
   // Côté overlay : capture figée de son écran (loupe).
   captureScreen(): Promise<Uint8Array | null>;
 
+  /** Capture PNG de l'écran sous le curseur (fichier + presse-papiers). */
+  takeScreenshot(): void;
+  /** Côté overlay : masquer (vrai) ou réafficher (faux) l'interface pour une capture. */
+  onCapturing(listener: (active: boolean) => void): () => void;
+  /** Côté overlay : interface masquée et redessinée, prêt pour la capture. */
+  notifyCaptureReady(): void;
+
   // Côté overlay : ordres venant du main et signalement des nouvelles étapes.
   onUndoRequested(listener: () => void): () => void;
   onRedoRequested(listener: () => void): () => void;

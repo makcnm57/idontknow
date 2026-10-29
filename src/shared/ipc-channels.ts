@@ -39,6 +39,12 @@ export const IpcChannel = {
 
   /** overlay → main (invoke) : capture PNG de son écran (loupe). */
   CaptureScreen: 'capture:screen',
+  /** renderer → main (send) : prendre une capture PNG (écran sous le curseur). */
+  ScreenshotTake: 'screenshot:take',
+  /** main → overlay : masquer / réafficher l'interface le temps d'une capture. */
+  OverlayCapturing: 'overlay:capturing',
+  /** overlay → main (send) : interface masquée et redessinée, prêt pour la capture. */
+  CaptureReady: 'capture:ready',
 
   /** main → overlay : annuler / rétablir une étape locale. */
   OverlayUndo: 'overlay:undo',
@@ -68,6 +74,8 @@ export interface IpcSendMap {
   [IpcChannel.HistoryCommitted]: { groupId?: string };
   [IpcChannel.ToolbarRelease]: undefined;
   [IpcChannel.ToolbarResize]: { width: number };
+  [IpcChannel.ScreenshotTake]: undefined;
+  [IpcChannel.CaptureReady]: undefined;
 }
 
 /** Événements du main vers les renderers : charge utile. */
@@ -77,4 +85,5 @@ export interface IpcEventMap {
   [IpcChannel.OverlayUndo]: undefined;
   [IpcChannel.OverlayRedo]: undefined;
   [IpcChannel.OverlayClear]: { groupId: string };
+  [IpcChannel.OverlayCapturing]: { active: boolean };
 }

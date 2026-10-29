@@ -106,3 +106,17 @@ body[data-board='black'] {
 .magnifier.visible {
   display: block;
 }
+
+/* Pendant une capture d'écran : seules les annotations (et le tableau / projecteur) restent. */
+body.capturing {
+  box-shadow: none;
+}
+
+body.capturing .size-indicator,
+body.capturing .magnifier {
+  display: none;
+}
+
+body.capturing .text-editor {
+  outline: none;
+}

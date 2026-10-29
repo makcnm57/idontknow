@@ -104,6 +104,7 @@ modeToggle.addEventListener('click', () => {
   api.updateState({ mode: currentState.mode === 'draw' ? 'passive' : 'draw' });
 });
 $<HTMLButtonElement>('#hide').addEventListener('click', () => api.hideOverlay());
+$<HTMLButtonElement>('#screenshot').addEventListener('click', () => api.takeScreenshot());
 
 function render(state: DrawState): void {
   currentState = state;

@@ -40,6 +40,11 @@ const api: ScreenDrawApi = {
 
   captureScreen: (): Promise<Uint8Array | null> => ipcRenderer.invoke(IpcChannel.CaptureScreen),
 
+  takeScreenshot: () => send(IpcChannel.ScreenshotTake, undefined),
+  onCapturing: (listener) =>
+    subscribe(IpcChannel.OverlayCapturing, ({ active }) => listener(active)),
+  notifyCaptureReady: () => send(IpcChannel.CaptureReady, undefined),
+
   onUndoRequested: (listener) => subscribe(IpcChannel.OverlayUndo, () => listener()),
   onRedoRequested: (listener) => subscribe(IpcChannel.OverlayRedo, () => listener()),
   onClearRequested: (listener) =>

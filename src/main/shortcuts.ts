@@ -7,11 +7,13 @@ import { globalShortcut } from 'electron';
 export interface GlobalShortcutActions {
   toggleVisible(): void;
   toggleMode(): void;
+  screenshot(): void;
 }
 
 const BINDINGS: Record<string, keyof GlobalShortcutActions> = {
   'CommandOrControl+Shift+D': 'toggleVisible',
   'CommandOrControl+Shift+F': 'toggleMode',
+  'CommandOrControl+Shift+S': 'screenshot',
 };
 
 /**

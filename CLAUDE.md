@@ -131,7 +131,8 @@ La barre d'outils est une **fenêtre séparée**, petite, déplaçable, toujours
   - *Reportée (décision du 29/10/2026) : les clics en mode passif traversent l'overlay, il faudrait un hook souris natif (`uiohook-napi`).*
 
 ### V4 — Export et confort
-- [ ] **Capture** : écran + annotations → PNG enregistré et/ou copié dans le presse-papiers
+- [x] **Capture** : écran + annotations → PNG enregistré et/ou copié dans le presse-papiers
+  - *Images\ScreenDraw, avec repli sur Téléchargements\ScreenDraw si l'accès contrôlé aux dossiers de Windows Defender bloque Images (cas de la machine de dev).*
 - [ ] Capture d'une zone sélectionnée
 - [ ] Paramètres persistants (couleur, épaisseur, outil, raccourcis, position de la barre)
 - [ ] Raccourcis personnalisables

@@ -37,6 +37,8 @@ let state: DrawState = DEFAULT_DRAW_STATE;
 let preview: Shape | null = null;
 /** Élément sélectionné (outil Sélection), retrouvé par son identifiant après undo / redo. */
 let selectedId: string | null = null;
+/** Vrai pendant une capture d'écran : l'interface de l'overlay est masquée. */
+let capturing = false;
 const history = new History<readonly Shape[]>([]);
 const sizeIndicator = new SizeIndicator();
 const spotlight = new Spotlight();
@@ -50,7 +52,7 @@ const layers = new LayeredCanvas(
   () => preview,
   (ctx) => {
     const selected = selectedShape();
-    if (selected) drawSelection(ctx, selected, state.color);
+    if (selected && !capturing) drawSelection(ctx, selected, state.color);
     if (laserTrail.isAlive) {
       laserTrail.draw(ctx, performance.now(), state.color, Math.max(4, state.size * 1.5));
       // Animation du fondu : une image de plus tant que la traînée n'a pas disparu.
@@ -186,6 +188,15 @@ window.addEventListener(
   },
   { passive: true },
 );
+
+// Capture d'écran : masque l'interface (liseré, sélection, loupe…), puis confirme au main
+// une fois l'écran redessiné (deux images : la première applique, la seconde est affichée).
+api.onCapturing((active) => {
+  capturing = active;
+  document.body.classList.toggle('capturing', active);
+  layers.invalidateActive();
+  if (active) requestAnimationFrame(() => requestAnimationFrame(() => api.notifyCaptureReady()));
+});
 
 // Ordres de l'historique global.
 api.onUndoRequested(() => {

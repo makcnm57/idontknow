@@ -1,14 +1,13 @@
 /**
- * Captures d'écran (desktopCapturer). Utilisé par la loupe : chaque overlay demande
- * une capture figée de son propre écran, à pleine résolution.
+ * Captures d'écran (desktopCapturer), à pleine résolution (pixels physiques).
+ * Utilisé par la loupe (capture figée demandée par un overlay) et par la capture PNG.
  */
-import { desktopCapturer, ipcMain, screen, type BrowserWindow } from 'electron';
+import { desktopCapturer, ipcMain, screen, type Display, type NativeImage } from 'electron';
 import { IpcChannel } from '@shared/ipc-channels';
 import { getOverlays } from './overlay';
 
-/** Capture PNG de l'écran qui contient `win`, en pixels physiques (null si indisponible). */
-async function captureDisplayOf(win: BrowserWindow): Promise<Uint8Array | null> {
-  const display = screen.getDisplayMatching(win.getBounds());
+/** Image de l'écran `display` telle qu'affichée (fenêtres de l'app comprises). */
+export async function captureDisplay(display: Display): Promise<NativeImage | null> {
   const { width, height } = display.size;
   const sources = await desktopCapturer.getSources({
     types: ['screen'],
@@ -23,13 +22,15 @@ async function captureDisplayOf(win: BrowserWindow): Promise<Uint8Array | null> 
     sources.find((s) => s.display_id === String(display.id)) ??
     (sources.length === 1 ? sources[0] : undefined);
   if (!source || source.thumbnail.isEmpty()) return null;
-  return source.thumbnail.toPNG();
+  return source.thumbnail;
 }
 
 export function registerCaptureHandlers(): void {
-  ipcMain.handle(IpcChannel.CaptureScreen, (event) => {
-    // Seuls les overlays peuvent demander une capture de leur écran.
+  ipcMain.handle(IpcChannel.CaptureScreen, async (event) => {
+    // Seuls les overlays peuvent demander une capture (figée) de leur écran.
     const overlay = getOverlays().find((win) => win.webContents.id === event.sender.id);
-    return overlay ? captureDisplayOf(overlay) : null;
+    if (!overlay) return null;
+    const image = await captureDisplay(screen.getDisplayMatching(overlay.getBounds()));
+    return image ? image.toPNG() : null;
   });
 }

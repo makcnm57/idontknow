@@ -8,6 +8,7 @@ import type { AppInfo, DrawState } from '@shared/types';
 import { getState, releaseToolbarFocus, setVisible, updateState } from './controller';
 import { registerCaptureHandlers } from './capture';
 import { registerHistoryHandlers } from './history-router';
+import { registerScreenshotHandlers } from './screenshot';
 import { beginToolbarFocus, getToolbar, resizeToolbar } from './toolbar';
 
 export function registerIpcHandlers(): void {
@@ -41,4 +42,5 @@ export function registerIpcHandlers(): void {
 
   registerHistoryHandlers();
   registerCaptureHandlers();
+  registerScreenshotHandlers();
 }

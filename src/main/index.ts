@@ -13,6 +13,7 @@ import {
 } from './controller';
 import { registerIpcHandlers } from './ipc';
 import { initOverlays } from './overlay';
+import { takeScreenshot } from './screenshot';
 import { registerGlobalShortcuts, unregisterGlobalShortcuts } from './shortcuts';
 import { createToolbar } from './toolbar';
 import { createTray, refreshTray, type TrayActions } from './tray';
@@ -32,17 +33,19 @@ function start(): void {
   createToolbar();
   initOverlays(configureOverlay);
 
+  const screenshot = (): void => void takeScreenshot();
   const trayActions: TrayActions = {
     isVisible,
     isDrawing: () => getState().mode === 'draw',
     toggleVisible,
     toggleMode,
+    screenshot,
     quit: () => app.quit(),
   };
   createTray(trayActions);
   onControllerChange(() => refreshTray(trayActions));
 
-  const failed = registerGlobalShortcuts({ toggleVisible, toggleMode });
+  const failed = registerGlobalShortcuts({ toggleVisible, toggleMode, screenshot });
   if (failed.length > 0) {
     dialog.showErrorBox(
       'ScreenDraw — raccourcis indisponibles',

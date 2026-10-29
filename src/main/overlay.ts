@@ -60,6 +60,12 @@ export function initOverlays(onCreated: (win: BrowserWindow) => void): void {
   });
 }
 
+/** Overlay de l'écran `displayId`, s'il existe encore. */
+export function getOverlayForDisplay(displayId: number): BrowserWindow | undefined {
+  const win = overlays.get(displayId);
+  return win && !win.isDestroyed() ? win : undefined;
+}
+
 export function getOverlays(): BrowserWindow[] {
   return [...overlays.values()].filter((win) => !win.isDestroyed());
 }

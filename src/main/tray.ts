@@ -9,6 +9,7 @@ export interface TrayActions {
   isDrawing(): boolean;
   toggleVisible(): void;
   toggleMode(): void;
+  screenshot(): void;
   quit(): void;
 }
 
@@ -27,6 +28,11 @@ function buildMenu(actions: TrayActions): Menu {
       checked: actions.isDrawing(),
       accelerator: 'CommandOrControl+Shift+F',
       click: actions.toggleMode,
+    },
+    {
+      label: "Capturer l'écran",
+      accelerator: 'CommandOrControl+Shift+S',
+      click: actions.screenshot,
     },
     { type: 'separator' },
     // La fenêtre de paramètres arrive en V4.
