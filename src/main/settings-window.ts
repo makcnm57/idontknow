@@ -22,7 +22,7 @@ export function openSettingsWindow(): void {
   settingsWindow = new BrowserWindow({
     width: 560,
     // Assez haute pour tout afficher sans défilement (tient sur un écran de 900 px).
-    height: 760,
+    height: 800,
     minWidth: 480,
     minHeight: 480,
     title: 'ScreenDraw — Paramètres',
@@ -39,4 +39,13 @@ export function openSettingsWindow(): void {
   settingsWindow.on('closed', () => (settingsWindow = null));
   hardenWindow(settingsWindow);
   loadRendererPage(settingsWindow, 'settings');
+}
+
+/**
+ * Remet la fenêtre Paramètres au premier plan. Comme pour la barre d'outils : sous Windows,
+ * un overlay activé passe devant elle (le niveau relatif est ignoré hors macOS).
+ */
+export function raiseSettingsWindow(): void {
+  const win = getSettingsWindow();
+  if (win?.isVisible()) win.moveTop();
 }

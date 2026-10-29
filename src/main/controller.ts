@@ -14,6 +14,7 @@ import {
   setOverlayVisible,
 } from './overlay';
 import { forgetOverlay } from './history-router';
+import { raiseSettingsWindow } from './settings-window';
 import { endToolbarFocus, getToolbar, raiseToolbar, setToolbarVisible } from './toolbar';
 import { sendTo } from './window-utils';
 
@@ -66,8 +67,11 @@ export function releaseToolbarFocus(): void {
 export function configureOverlay(win: BrowserWindow): void {
   setOverlayMode(win, state.mode);
   setOverlayVisible(win, visible);
-  // Activer un overlay le fait passer devant la barre d'outils : on la remonte.
-  win.on('focus', raiseToolbar);
+  // Activer un overlay le fait passer devant la barre d'outils et les Paramètres : on les remonte.
+  win.on('focus', () => {
+    raiseSettingsWindow();
+    raiseToolbar();
+  });
   // L'identifiant n'est plus lisible une fois la fenêtre détruite : on le capture ici.
   const webContentsId = win.webContents.id;
   win.on('closed', () => forgetOverlay(webContentsId));
