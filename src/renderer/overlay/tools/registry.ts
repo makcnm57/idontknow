@@ -8,6 +8,7 @@ import { badgeTool } from './badge';
 import { ellipseTool } from './ellipse';
 import { eraserTool } from './eraser';
 import { highlighterTool } from './highlighter';
+import { laserTool } from './laser';
 import { lineTool } from './line';
 import { penTool } from './pen';
 import { rectTool } from './rect';
@@ -27,6 +28,7 @@ const ALL_TOOLS = [
   ellipseTool,
   textTool,
   badgeTool,
+  laserTool,
 ];
 for (const tool of ALL_TOOLS) tools[tool.id] = tool;
 

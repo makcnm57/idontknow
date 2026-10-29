@@ -30,6 +30,7 @@ const COMBOS: Record<string, OverlayAction> = {
   t: { type: 'tool', tool: 'text' },
   v: { type: 'tool', tool: 'select' },
   n: { type: 'tool', tool: 'number' },
+  k: { type: 'tool', tool: 'laser' },
 };
 
 /**

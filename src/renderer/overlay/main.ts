@@ -14,6 +14,7 @@ import { attachKeyboard, type OverlayAction } from './keyboard';
 import { drawSelection } from './selection';
 import { SizeIndicator } from './size-indicator';
 import { getTool } from './tools/registry';
+import { laserTrail } from './tools/laser';
 import { textEditor } from './tools/text';
 import type { ToolContext } from './tools/tool';
 
@@ -41,6 +42,11 @@ const layers = new LayeredCanvas(
   (ctx) => {
     const selected = selectedShape();
     if (selected) drawSelection(ctx, selected, state.color);
+    if (laserTrail.isAlive) {
+      laserTrail.draw(ctx, performance.now(), state.color, Math.max(4, state.size * 1.5));
+      // Animation du fondu : une image de plus tant que la traînée n'a pas disparu.
+      if (laserTrail.isAlive) layers.invalidateActive();
+    }
   },
 );
 
@@ -67,6 +73,9 @@ const toolContext: ToolContext = {
   amendShapes(next) {
     history.amend(next);
     shapesChanged();
+  },
+  requestActiveRender() {
+    layers.invalidateActive();
   },
   setSelection(id) {
     selectedId = id;

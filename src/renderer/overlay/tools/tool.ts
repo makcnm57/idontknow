@@ -16,6 +16,8 @@ export interface ToolContext {
   amendShapes(next: readonly Shape[]): void;
   /** Identifiant de l'élément sélectionné (outil Sélection), ou `null`. */
   setSelection(id: string | null): void;
+  /** Demande un redessin du calque actif (effets animés comme le laser). */
+  requestActiveRender(): void;
   /** Forme en cours affichée sur le calque actif (`null` pour l'effacer). */
   setPreview(shape: Shape | null): void;
 }

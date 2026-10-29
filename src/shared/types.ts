@@ -15,6 +15,7 @@ export const TOOL_IDS = [
   'text',
   'select',
   'number',
+  'laser',
 ] as const;
 export type ToolId = (typeof TOOL_IDS)[number];
 
