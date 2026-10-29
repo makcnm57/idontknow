@@ -1,0 +1,18 @@
+appId: com.kawa.screendraw
+productName: ScreenDraw
+directories:
+  buildResources: resources
+  output: release/${version}
+files:
+  - out/**
+  - package.json
+win:
+  target:
+    - nsis
+    - portable
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  artifactName: ${productName}-Setup-${version}.${ext}
+portable:
+  artifactName: ${productName}-Portable-${version}.${ext}
