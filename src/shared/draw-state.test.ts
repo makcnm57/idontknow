@@ -1,0 +1,48 @@
+import { describe, expect, it } from 'vitest';
+import {
+  applyStatePatch,
+  DEFAULT_DRAW_STATE,
+  MAX_SIZE,
+  MIN_SIZE,
+  sanitizeStatePatch,
+} from './draw-state';
+
+describe('sanitizeStatePatch', () => {
+  it('garde les champs valides', () => {
+    expect(
+      sanitizeStatePatch({ tool: 'eraser', color: '#00FF00', size: 12, mode: 'draw' }),
+    ).toEqual({ tool: 'eraser', color: '#00ff00', size: 12, mode: 'draw' });
+  });
+
+  it('ignore les valeurs inconnues ou mal typées', () => {
+    expect(
+      sanitizeStatePatch({ tool: 'rm -rf', color: 'red', size: '12', mode: 'fly', extra: 1 }),
+    ).toEqual({});
+  });
+
+  it('borne et arrondit la taille', () => {
+    expect(sanitizeStatePatch({ size: 999 }).size).toBe(MAX_SIZE);
+    expect(sanitizeStatePatch({ size: -3 }).size).toBe(MIN_SIZE);
+    expect(sanitizeStatePatch({ size: 4.6 }).size).toBe(5);
+    expect(sanitizeStatePatch({ size: Number.NaN })).toEqual({});
+  });
+
+  it('renvoie un objet vide pour une entrée non objet', () => {
+    expect(sanitizeStatePatch(null)).toEqual({});
+    expect(sanitizeStatePatch('pen')).toEqual({});
+  });
+});
+
+describe('applyStatePatch', () => {
+  it('renvoie un nouvel état si un champ change', () => {
+    const next = applyStatePatch(DEFAULT_DRAW_STATE, { mode: 'draw' });
+    expect(next).not.toBe(DEFAULT_DRAW_STATE);
+    expect(next.mode).toBe('draw');
+  });
+
+  it('renvoie le même objet si rien ne change', () => {
+    expect(applyStatePatch(DEFAULT_DRAW_STATE, { tool: DEFAULT_DRAW_STATE.tool })).toBe(
+      DEFAULT_DRAW_STATE,
+    );
+  });
+});

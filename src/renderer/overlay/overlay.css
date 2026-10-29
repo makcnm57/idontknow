@@ -1,0 +1,28 @@
+/* Overlay plein écran : fond totalement transparent, deux calques canvas superposés. */
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/*
+ * Mode dessin : liseré coloré pour signaler que l'overlay capte la souris.
+ * Le fond quasi invisible (alpha 1/255) garantit que Windows envoie bien les clics
+ * à la fenêtre même sur une zone où rien n'est dessiné.
+ */
+body.mode-draw {
+  background: rgba(0, 0, 0, 0.004);
+  box-shadow: inset 0 0 0 3px var(--accent, #ff3b30);
+  cursor: crosshair;
+}
