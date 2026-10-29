@@ -90,3 +90,19 @@ body[data-board='black'] {
 .spotlight.visible {
   opacity: 1;
 }
+
+/* Loupe : cercle grossissant au-dessus de tout, qui ne capte aucun événement. */
+.magnifier {
+  position: fixed;
+  z-index: 3;
+  display: none;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 6px 24px rgba(0, 0, 0, 0.5);
+}
+
+.magnifier.visible {
+  display: block;
+}

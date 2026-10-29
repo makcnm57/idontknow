@@ -78,6 +78,12 @@ spotlightToggle.addEventListener('click', () => {
   if (currentState) api.updateState({ spotlight: !currentState.spotlight });
 });
 
+// --- Loupe : interrupteur, utilisable aussi en mode passif.
+const magnifierToggle = $<HTMLButtonElement>('#magnifier-toggle');
+magnifierToggle.addEventListener('click', () => {
+  if (currentState) api.updateState({ magnifier: !currentState.magnifier });
+});
+
 // --- Formes pleines ou en contour (rectangle, ellipse).
 const fillToggle = $<HTMLButtonElement>('#fill-toggle');
 fillToggle.addEventListener('click', () => {
@@ -126,6 +132,7 @@ function render(state: DrawState): void {
     button.setAttribute('aria-pressed', String(button.dataset['board'] === state.board));
   }
   spotlightToggle.setAttribute('aria-pressed', String(state.spotlight));
+  magnifierToggle.setAttribute('aria-pressed', String(state.magnifier));
   fillToggle.setAttribute('aria-pressed', String(state.fill));
   fillToggle.title = state.fill
     ? 'Formes pleines (cliquer pour : contour)'

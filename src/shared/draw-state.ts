@@ -9,6 +9,8 @@ export const MIN_SIZE = 1;
 export const MAX_SIZE = 64;
 export const MIN_SPOTLIGHT_RADIUS = 40;
 export const MAX_SPOTLIGHT_RADIUS = 900;
+export const MIN_MAGNIFIER_ZOOM = 1.5;
+export const MAX_MAGNIFIER_ZOOM = 8;
 
 export const DEFAULT_DRAW_STATE: DrawState = {
   tool: 'pen',
@@ -18,11 +20,21 @@ export const DEFAULT_DRAW_STATE: DrawState = {
   board: 'none',
   spotlight: false,
   spotlightRadius: 180,
+  magnifier: false,
+  magnifierZoom: 2,
   mode: 'passive',
 };
 
 const clampRadius = (radius: number): number =>
   Math.round(Math.min(MAX_SPOTLIGHT_RADIUS, Math.max(MIN_SPOTLIGHT_RADIUS, radius)));
+
+const clampZoom = (zoom: number): number =>
+  Math.round(Math.min(MAX_MAGNIFIER_ZOOM, Math.max(MIN_MAGNIFIER_ZOOM, zoom)) * 100) / 100;
+
+/** Grossissement de la loupe après un cran de molette : ×1,25 ou ÷1,25, dans les bornes. */
+export function stepMagnifierZoom(zoom: number, direction: 1 | -1): number {
+  return clampZoom(zoom * (direction === 1 ? 1.25 : 1 / 1.25));
+}
 
 /** Rayon du projecteur après un cran de molette : ±10 %, pour un réglage fluide à toute taille. */
 export function stepSpotlightRadius(radius: number, direction: 1 | -1): number {
@@ -69,6 +81,10 @@ export function sanitizeStatePatch(patch: unknown): Partial<DrawState> {
   if (typeof input['fill'] === 'boolean') clean.fill = input['fill'];
   if (isBoard(input['board'])) clean.board = input['board'];
   if (typeof input['spotlight'] === 'boolean') clean.spotlight = input['spotlight'];
+  if (typeof input['magnifier'] === 'boolean') clean.magnifier = input['magnifier'];
+  if (typeof input['magnifierZoom'] === 'number' && Number.isFinite(input['magnifierZoom'])) {
+    clean.magnifierZoom = clampZoom(input['magnifierZoom']);
+  }
   if (typeof input['spotlightRadius'] === 'number' && Number.isFinite(input['spotlightRadius'])) {
     clean.spotlightRadius = clampRadius(input['spotlightRadius']);
   }

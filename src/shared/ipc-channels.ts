@@ -37,6 +37,9 @@ export const IpcChannel = {
   /** barre d'outils → main : largeur de son contenu, pour ajuster la fenêtre. */
   ToolbarResize: 'toolbar:resize',
 
+  /** overlay → main (invoke) : capture PNG de son écran (loupe). */
+  CaptureScreen: 'capture:screen',
+
   /** main → overlay : annuler / rétablir une étape locale. */
   OverlayUndo: 'overlay:undo',
   OverlayRedo: 'overlay:redo',
@@ -52,6 +55,7 @@ export interface IpcInvokeMap {
   [IpcChannel.StateGet]: { args: []; result: DrawState };
   [IpcChannel.HistoryGet]: { args: []; result: HistoryState };
   [IpcChannel.ToolbarFocus]: { args: []; result: undefined };
+  [IpcChannel.CaptureScreen]: { args: []; result: Uint8Array | null };
 }
 
 /** Canaux `send` / `on` du renderer vers le main : charge utile. */

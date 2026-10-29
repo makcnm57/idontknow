@@ -38,6 +38,8 @@ const api: ScreenDrawApi = {
   releaseToolbarFocus: () => send(IpcChannel.ToolbarRelease, undefined),
   resizeToolbar: (width) => send(IpcChannel.ToolbarResize, { width }),
 
+  captureScreen: (): Promise<Uint8Array | null> => ipcRenderer.invoke(IpcChannel.CaptureScreen),
+
   onUndoRequested: (listener) => subscribe(IpcChannel.OverlayUndo, () => listener()),
   onRedoRequested: (listener) => subscribe(IpcChannel.OverlayRedo, () => listener()),
   onClearRequested: (listener) =>

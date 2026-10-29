@@ -127,6 +127,10 @@ export interface DrawState {
   spotlight: boolean;
   /** Rayon du cercle éclairé (pixels CSS). */
   spotlightRadius: number;
+  /** Loupe : grossit une capture figée de l'écran autour du curseur. */
+  magnifier: boolean;
+  /** Facteur de grossissement de la loupe. */
+  magnifierZoom: number;
   mode: InteractionMode;
 }
 

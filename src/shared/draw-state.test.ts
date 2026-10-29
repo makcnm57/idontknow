@@ -2,11 +2,14 @@ import { describe, expect, it } from 'vitest';
 import {
   applyStatePatch,
   DEFAULT_DRAW_STATE,
+  MAX_MAGNIFIER_ZOOM,
   MAX_SIZE,
   MAX_SPOTLIGHT_RADIUS,
+  MIN_MAGNIFIER_ZOOM,
   MIN_SIZE,
   MIN_SPOTLIGHT_RADIUS,
   sanitizeStatePatch,
+  stepMagnifierZoom,
   stepSize,
   stepSpotlightRadius,
 } from './draw-state';
@@ -129,5 +132,22 @@ describe('projecteur', () => {
   it('reste actif en repassant en mode passif (contrairement au tableau)', () => {
     const drawing = applyStatePatch(DEFAULT_DRAW_STATE, { mode: 'draw', spotlight: true });
     expect(applyStatePatch(drawing, { mode: 'passive' }).spotlight).toBe(true);
+  });
+});
+
+describe('loupe', () => {
+  it('valide l’activation et borne le grossissement', () => {
+    expect(sanitizeStatePatch({ magnifier: true, magnifierZoom: 50 })).toEqual({
+      magnifier: true,
+      magnifierZoom: MAX_MAGNIFIER_ZOOM,
+    });
+    expect(sanitizeStatePatch({ magnifier: 1, magnifierZoom: 'x2' })).toEqual({});
+  });
+
+  it('grossit de ×1,25 par cran, dans les bornes', () => {
+    expect(stepMagnifierZoom(2, 1)).toBe(2.5);
+    expect(stepMagnifierZoom(2.5, -1)).toBe(2);
+    expect(stepMagnifierZoom(MIN_MAGNIFIER_ZOOM, -1)).toBe(MIN_MAGNIFIER_ZOOM);
+    expect(stepMagnifierZoom(MAX_MAGNIFIER_ZOOM, 1)).toBe(MAX_MAGNIFIER_ZOOM);
   });
 });

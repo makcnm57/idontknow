@@ -6,6 +6,7 @@ import { sanitizeStatePatch } from '@shared/draw-state';
 import { IpcChannel } from '@shared/ipc-channels';
 import type { AppInfo, DrawState } from '@shared/types';
 import { getState, releaseToolbarFocus, setVisible, updateState } from './controller';
+import { registerCaptureHandlers } from './capture';
 import { registerHistoryHandlers } from './history-router';
 import { beginToolbarFocus, getToolbar, resizeToolbar } from './toolbar';
 
@@ -39,4 +40,5 @@ export function registerIpcHandlers(): void {
   });
 
   registerHistoryHandlers();
+  registerCaptureHandlers();
 }

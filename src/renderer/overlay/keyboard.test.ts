@@ -66,3 +66,10 @@ describe('projecteur', () => {
     expect(resolveShortcut(key('s', 'KeyS'))).toEqual({ type: 'spotlight' });
   });
 });
+
+describe('loupe', () => {
+  it('Z bascule la loupe, Ctrl+Z reste « annuler »', () => {
+    expect(resolveShortcut(key('z', 'KeyW'))).toEqual({ type: 'magnifier' });
+    expect(resolveShortcut(key('z', 'KeyW', { ctrl: true }))).toEqual({ type: 'undo' });
+  });
+});

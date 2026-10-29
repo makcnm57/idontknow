@@ -26,6 +26,9 @@ export interface ScreenDrawApi {
   /** Ajuste la largeur de la fenêtre de la barre à son contenu. */
   resizeToolbar(width: number): void;
 
+  // Côté overlay : capture figée de son écran (loupe).
+  captureScreen(): Promise<Uint8Array | null>;
+
   // Côté overlay : ordres venant du main et signalement des nouvelles étapes.
   onUndoRequested(listener: () => void): () => void;
   onRedoRequested(listener: () => void): () => void;

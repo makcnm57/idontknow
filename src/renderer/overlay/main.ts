@@ -4,7 +4,12 @@
  * L'ordre des actions entre écrans est tenu par le main (historique global) : chaque
  * nouvelle étape lui est signalée, et annuler / rétablir / tout effacer passent par lui.
  */
-import { DEFAULT_DRAW_STATE, stepSize, stepSpotlightRadius } from '@shared/draw-state';
+import {
+  DEFAULT_DRAW_STATE,
+  stepMagnifierZoom,
+  stepSize,
+  stepSpotlightRadius,
+} from '@shared/draw-state';
 import { HIGHLIGHTER_SIZE_FACTOR, PALETTE } from '@shared/palette';
 import type { DrawState, Shape } from '@shared/types';
 import { LayeredCanvas, watchPixelRatio } from './canvas';
@@ -12,6 +17,7 @@ import { History } from './history';
 import { attachPointerInput, PEN_ERASER_BUTTON } from './input';
 import { attachKeyboard, type OverlayAction } from './keyboard';
 import { drawSelection } from './selection';
+import { Magnifier } from './magnifier';
 import { SizeIndicator } from './size-indicator';
 import { Spotlight } from './spotlight';
 import { getTool } from './tools/registry';
@@ -34,6 +40,7 @@ let selectedId: string | null = null;
 const history = new History<readonly Shape[]>([]);
 const sizeIndicator = new SizeIndicator();
 const spotlight = new Spotlight();
+const magnifier = new Magnifier();
 
 const activeCanvas = requireCanvas('layer-active');
 const layers = new LayeredCanvas(
@@ -96,6 +103,8 @@ function render(next: DrawState): void {
   document.body.dataset['board'] = state.board;
   spotlight.setEnabled(state.spotlight);
   spotlight.setRadius(state.spotlightRadius);
+  void magnifier.setEnabled(state.magnifier);
+  magnifier.setZoom(state.magnifierZoom);
   document.documentElement.style.setProperty('--accent', state.color);
   activeCanvas.style.cursor = getTool(state.tool)?.cursor ?? 'default';
   // La saisie en cours suit couleur et taille ; changer d'outil la valide.
@@ -129,16 +138,18 @@ const actions: ActionHandlers = {
     toolContext.commitShapes(history.present.filter((s) => s !== selected));
     toolContext.setSelection(null);
   },
-  // Échap, par étapes : désélectionner, éteindre le projecteur, fermer le tableau,
+  // Échap, par étapes : désélectionner, fermer la loupe, éteindre le projecteur, fermer le tableau,
   // puis quitter le mode dessin.
   exit: () => {
     if (selectedShape()) toolContext.setSelection(null);
+    else if (state.magnifier) api.updateState({ magnifier: false });
     else if (state.spotlight) api.updateState({ spotlight: false });
     else if (state.board !== 'none') api.updateState({ board: 'none' });
     else api.updateState({ mode: 'passive' });
   },
   // W / B : ouvre le tableau, ou le ferme s'il est déjà affiché.
   spotlight: () => api.updateState({ spotlight: !state.spotlight }),
+  magnifier: () => api.updateState({ magnifier: !state.magnifier }),
   board: ({ board }) => api.updateState({ board: state.board === board ? 'none' : board }),
   tool: ({ tool }) => api.updateState({ tool }),
   color: ({ index }) => {
@@ -164,8 +175,10 @@ window.addEventListener(
   (e) => {
     if (state.mode !== 'draw' || e.deltaY === 0) return;
     const direction = e.deltaY < 0 ? 1 : -1;
-    // Projecteur allumé : la molette règle son rayon plutôt que l'épaisseur.
-    if (state.spotlight) {
+    // Molette, par priorité : zoom de la loupe, rayon du projecteur, sinon épaisseur.
+    if (state.magnifier) {
+      api.updateState({ magnifierZoom: stepMagnifierZoom(state.magnifierZoom, direction) });
+    } else if (state.spotlight) {
       api.updateState({ spotlightRadius: stepSpotlightRadius(state.spotlightRadius, direction) });
     } else {
       api.updateState({ size: stepSize(state.size, direction) });
