@@ -152,6 +152,11 @@ export function hitShape(shape: Shape, p: Point, radius: number): boolean {
   return (hitTesters[shape.kind] as HitTester)(shape, p, radius);
 }
 
+/** Élément affiché au-dessus des autres sous le point (le dernier de la liste), s'il y en a un. */
+export function topmostHit(shapes: readonly Shape[], p: Point, radius: number): Shape | undefined {
+  return shapes.findLast((shape) => hitShape(shape, p, radius));
+}
+
 /**
  * Points intermédiaires entre deux positions, espacés d'au plus `spacing`.
  * Un mouvement rapide de la gomme ne « saute » ainsi aucun trait fin.

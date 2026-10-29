@@ -8,6 +8,7 @@ import {
   hitStroke,
   hitText,
   interpolate,
+  topmostHit,
 } from './hit-test';
 import { arrowHead } from './shapes/shape-geometry';
 
@@ -165,5 +166,29 @@ describe('hitText', () => {
     expect(hitText(text, { x: 50, y: 20 }, 0)).toBe(true);
     expect(hitText(text, { x: 95, y: 20 }, 6)).toBe(true);
     expect(hitText(text, { x: 120, y: 20 }, 6)).toBe(false);
+  });
+});
+
+describe('topmostHit', () => {
+  const square = (id: string) => ({
+    id,
+    kind: 'rect' as const,
+    x: 0,
+    y: 0,
+    width: 50,
+    height: 50,
+    fill: true,
+    color: '#000000',
+    size: 2,
+  });
+
+  it('renvoie l’élément dessiné en dernier parmi ceux touchés', () => {
+    expect(topmostHit([square('dessous'), square('dessus')], { x: 25, y: 25 }, 2)?.id).toBe(
+      'dessus',
+    );
+  });
+
+  it('ne renvoie rien dans le vide', () => {
+    expect(topmostHit([square('a')], { x: 200, y: 200 }, 2)).toBeUndefined();
   });
 });

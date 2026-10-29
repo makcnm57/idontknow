@@ -28,6 +28,8 @@ export class LayeredCanvas {
     private readonly active: HTMLCanvasElement,
     private readonly getShapes: () => readonly Shape[],
     private readonly getPreview: () => Shape | null,
+    /** Décorations du calque actif (cadre de sélection), dessinées après l'aperçu. */
+    private readonly drawDecorations: (ctx: CanvasRenderingContext2D) => void = () => {},
   ) {
     this.committedCtx = get2dContext(committed);
     this.activeCtx = get2dContext(active);
@@ -85,6 +87,7 @@ export class LayeredCanvas {
       this.clear(this.activeCtx);
       const preview = this.getPreview();
       if (preview) drawShape(this.activeCtx, preview, false);
+      this.drawDecorations(this.activeCtx);
     }
   }
 

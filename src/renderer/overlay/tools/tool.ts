@@ -14,6 +14,8 @@ export interface ToolContext {
   commitShapes(next: readonly Shape[]): void;
   /** Remplace la liste des formes dans la même étape d'historique (geste en cours). */
   amendShapes(next: readonly Shape[]): void;
+  /** Identifiant de l'élément sélectionné (outil Sélection), ou `null`. */
+  setSelection(id: string | null): void;
   /** Forme en cours affichée sur le calque actif (`null` pour l'effacer). */
   setPreview(shape: Shape | null): void;
 }

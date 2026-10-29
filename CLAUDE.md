@@ -118,7 +118,7 @@ La barre d'outils est une **fenêtre séparée**, petite, déplaçable, toujours
 - [x] **Ligne**, **flèche**, **rectangle**, **ellipse** (Shift = contraindre : ligne droite à 45°, carré, cercle)
 - [x] Formes pleines ou contour uniquement
 - [x] **Texte** (clic pour placer, édition en ligne, taille de police réglable)
-- [ ] **Outil sélection** : sélectionner, déplacer, supprimer un élément
+- [x] **Outil sélection** : sélectionner, déplacer, supprimer un élément
 - [ ] **Numérotation** : pastilles 1, 2, 3… pour annoter des étapes
 
 ### V3 — Présentation

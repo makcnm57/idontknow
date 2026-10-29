@@ -11,6 +11,7 @@ import { LayeredCanvas, watchPixelRatio } from './canvas';
 import { History } from './history';
 import { attachPointerInput, PEN_ERASER_BUTTON } from './input';
 import { attachKeyboard, type OverlayAction } from './keyboard';
+import { drawSelection } from './selection';
 import { SizeIndicator } from './size-indicator';
 import { getTool } from './tools/registry';
 import { textEditor } from './tools/text';
@@ -26,6 +27,8 @@ function requireCanvas(id: string): HTMLCanvasElement {
 
 let state: DrawState = DEFAULT_DRAW_STATE;
 let preview: Shape | null = null;
+/** Élément sélectionné (outil Sélection), retrouvé par son identifiant après undo / redo. */
+let selectedId: string | null = null;
 const history = new History<readonly Shape[]>([]);
 const sizeIndicator = new SizeIndicator();
 
@@ -35,7 +38,21 @@ const layers = new LayeredCanvas(
   activeCanvas,
   () => history.present,
   () => preview,
+  (ctx) => {
+    const selected = selectedShape();
+    if (selected) drawSelection(ctx, selected, state.color);
+  },
 );
+
+function selectedShape(): Shape | undefined {
+  return selectedId === null ? undefined : history.present.find((s) => s.id === selectedId);
+}
+
+/** À appeler quand la liste des formes change : le cadre de sélection suit l'élément. */
+function shapesChanged(): void {
+  layers.invalidateCommitted();
+  layers.invalidateActive();
+}
 
 const toolContext: ToolContext = {
   get state() {
@@ -44,12 +61,16 @@ const toolContext: ToolContext = {
   getShapes: () => history.present,
   commitShapes(next) {
     history.commit(next);
-    layers.invalidateCommitted();
+    shapesChanged();
     api.notifyCommitted();
   },
   amendShapes(next) {
     history.amend(next);
-    layers.invalidateCommitted();
+    shapesChanged();
+  },
+  setSelection(id) {
+    selectedId = id;
+    layers.invalidateActive();
   },
   setPreview(shape) {
     preview = shape;
@@ -66,6 +87,8 @@ function render(next: DrawState): void {
   // La saisie en cours suit couleur et taille ; changer d'outil la valide.
   textEditor.applyStyle(state);
   if (state.tool !== 'text') textEditor.commit();
+  // La sélection n'a de sens qu'avec l'outil Sélection, en mode dessin.
+  if (state.tool !== 'select' || state.mode !== 'draw') toolContext.setSelection(null);
   // Seul l'overlay sous le curseur (celui qui a le focus) affiche l'indicateur.
   if (sizeChanged && document.hasFocus()) {
     const factor = state.tool === 'highlighter' ? HIGHLIGHTER_SIZE_FACTOR : 1;
@@ -82,8 +105,21 @@ const actions: ActionHandlers = {
   // Annuler / rétablir / effacer agissent sur tous les écrans : le main décide lesquels.
   undo: () => api.undo(),
   redo: () => api.redo(),
-  clear: () => api.clearAll(),
-  exit: () => api.updateState({ mode: 'passive' }),
+  // Suppr : supprime la sélection s'il y en a une, sinon efface tout (tous les écrans).
+  clear: () => {
+    const selected = selectedShape();
+    if (!selected) {
+      api.clearAll();
+      return;
+    }
+    toolContext.commitShapes(history.present.filter((s) => s !== selected));
+    toolContext.setSelection(null);
+  },
+  // Échap : désélectionne d'abord, puis quitte le mode dessin.
+  exit: () => {
+    if (selectedShape()) toolContext.setSelection(null);
+    else api.updateState({ mode: 'passive' });
+  },
   tool: ({ tool }) => api.updateState({ tool }),
   color: ({ index }) => {
     const color = PALETTE[index];
@@ -114,16 +150,16 @@ window.addEventListener(
 
 // Ordres de l'historique global.
 api.onUndoRequested(() => {
-  if (history.undo()) layers.invalidateCommitted();
+  if (history.undo()) shapesChanged();
 });
 api.onRedoRequested(() => {
-  if (history.redo()) layers.invalidateCommitted();
+  if (history.redo()) shapesChanged();
 });
 // « Tout effacer » est une étape comme une autre, rattachée au groupe multi-écrans.
 api.onClearRequested((groupId) => {
   if (history.present.length === 0) return;
   history.commit([]);
-  layers.invalidateCommitted();
+  shapesChanged();
   api.notifyCommitted(groupId);
 });
 
