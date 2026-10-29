@@ -204,3 +204,9 @@ body.mode-draw .mode-dot {
 #fill-toggle[aria-pressed='true'] .fill-icon {
   fill: currentColor;
 }
+
+/* Icône du tableau noir : rectangle plein pour le distinguer du tableau blanc. */
+.board-black-icon {
+  fill: currentColor;
+  fill-opacity: 0.35;
+}

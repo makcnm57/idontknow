@@ -111,6 +111,9 @@ export interface BadgeShape extends Point {
 /** Élément vectoriel affiché sur le canvas. */
 export type Shape = StrokeShape | LineShape | RectShape | EllipseShape | TextShape | BadgeShape;
 
+/** Fond opaque affiché sous les annotations (tableau blanc / noir), ou aucun. */
+export type Board = 'none' | 'white' | 'black';
+
 /** Réglages de dessin courants, partagés entre la barre d'outils et tous les overlays. */
 export interface DrawState {
   tool: ToolId;
@@ -118,6 +121,8 @@ export interface DrawState {
   size: number;
   /** Rectangles et ellipses pleins (vrai) ou en contour (faux). */
   fill: boolean;
+  /** Tableau blanc / noir affiché sur tous les écrans. */
+  board: Board;
   mode: InteractionMode;
 }
 

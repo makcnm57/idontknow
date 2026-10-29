@@ -63,6 +63,15 @@ const sizeButtons = SIZE_PRESETS.map((size, index) => {
   return { size: size as number, button };
 });
 
+// --- Tableaux blanc / noir : un clic ouvre, un second clic ferme.
+const boardButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-board]')];
+for (const button of boardButtons) {
+  button.addEventListener('click', () => {
+    const board = button.dataset['board'] === 'black' ? 'black' : 'white';
+    if (currentState) api.updateState({ board: currentState.board === board ? 'none' : board });
+  });
+}
+
 // --- Formes pleines ou en contour (rectangle, ellipse).
 const fillToggle = $<HTMLButtonElement>('#fill-toggle');
 fillToggle.addEventListener('click', () => {
@@ -107,6 +116,9 @@ function render(state: DrawState): void {
   customSwatch.style.setProperty('--swatch', state.color);
   customInput.value = state.color;
 
+  for (const button of boardButtons) {
+    button.setAttribute('aria-pressed', String(button.dataset['board'] === state.board));
+  }
   fillToggle.setAttribute('aria-pressed', String(state.fill));
   fillToggle.title = state.fill
     ? 'Formes pleines (cliquer pour : contour)'

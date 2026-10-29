@@ -70,3 +70,39 @@ describe('stepSize', () => {
     expect(stepSize(MAX_SIZE, 1)).toBe(MAX_SIZE);
   });
 });
+
+describe('tableau blanc / noir', () => {
+  it('accepte uniquement les valeurs connues', () => {
+    expect(sanitizeStatePatch({ board: 'black' })).toEqual({ board: 'black' });
+    expect(sanitizeStatePatch({ board: 'vert' })).toEqual({});
+  });
+
+  it('ouvrir un tableau passe en mode dessin', () => {
+    const next = applyStatePatch(DEFAULT_DRAW_STATE, { board: 'white' });
+    expect(next).toMatchObject({ board: 'white', mode: 'draw' });
+  });
+
+  it('repasser en mode passif ferme le tableau', () => {
+    const drawing = applyStatePatch(DEFAULT_DRAW_STATE, { board: 'black' });
+    expect(applyStatePatch(drawing, { mode: 'passive' })).toMatchObject({
+      board: 'none',
+      mode: 'passive',
+    });
+  });
+
+  it('fermer le tableau garde le mode dessin', () => {
+    const drawing = applyStatePatch(DEFAULT_DRAW_STATE, { board: 'white' });
+    expect(applyStatePatch(drawing, { board: 'none' })).toMatchObject({
+      board: 'none',
+      mode: 'draw',
+    });
+  });
+
+  it('passer du blanc au noir reste en mode dessin', () => {
+    const white = applyStatePatch(DEFAULT_DRAW_STATE, { board: 'white' });
+    expect(applyStatePatch(white, { board: 'black' })).toMatchObject({
+      board: 'black',
+      mode: 'draw',
+    });
+  });
+});

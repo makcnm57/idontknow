@@ -126,7 +126,7 @@ La barre d'outils est une **fenêtre séparée**, petite, déplaçable, toujours
 - [ ] **Projecteur** (spotlight) : assombrit l'écran sauf un cercle autour du curseur
 - [ ] **Loupe** : zoom autour du curseur (capture via desktopCapturer)
   - *Choix : capture figée à l'activation (une capture en direct filmerait la loupe elle-même, et exclure l'overlay des captures le masquerait aussi dans Discord/Teams/OBS).*
-- [ ] **Tableau blanc / noir** : fond opaque pour dessiner sans l'écran derrière
+- [x] **Tableau blanc / noir** : fond opaque pour dessiner sans l'écran derrière
 - [ ] **Mise en évidence des clics** : cercle animé à chaque clic (utile en tutoriel vidéo)
   - *Reportée (décision du 29/10/2026) : les clics en mode passif traversent l'overlay, il faudrait un hook souris natif (`uiohook-napi`).*
 

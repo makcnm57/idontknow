@@ -53,3 +53,10 @@ describe('resolveShortcut', () => {
     expect(resolveShortcut(key('2', 'Digit2', { ctrl: true, alt: true }))).toBeUndefined();
   });
 });
+
+describe('tableaux', () => {
+  it('W et B ouvrent les tableaux blanc et noir', () => {
+    expect(resolveShortcut(key('w', 'KeyZ'))).toEqual({ type: 'board', board: 'white' });
+    expect(resolveShortcut(key('b', 'KeyB'))).toEqual({ type: 'board', board: 'black' });
+  });
+});

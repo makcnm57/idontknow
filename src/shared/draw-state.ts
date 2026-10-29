@@ -3,7 +3,7 @@
  * Les patchs arrivent du renderer par IPC : on ne leur fait pas confiance aveuglément.
  */
 import { PALETTE, SIZE_PRESETS } from './palette';
-import { TOOL_IDS, type DrawState, type InteractionMode, type ToolId } from './types';
+import { TOOL_IDS, type Board, type DrawState, type InteractionMode, type ToolId } from './types';
 
 export const MIN_SIZE = 1;
 export const MAX_SIZE = 64;
@@ -13,6 +13,7 @@ export const DEFAULT_DRAW_STATE: DrawState = {
   color: PALETTE[0],
   size: SIZE_PRESETS[1],
   fill: false,
+  board: 'none',
   mode: 'passive',
 };
 
@@ -29,6 +30,10 @@ const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 
 function isToolId(value: unknown): value is ToolId {
   return typeof value === 'string' && (TOOL_IDS as readonly string[]).includes(value);
+}
+
+function isBoard(value: unknown): value is Board {
+  return value === 'none' || value === 'white' || value === 'black';
 }
 
 function isMode(value: unknown): value is InteractionMode {
@@ -50,15 +55,24 @@ export function sanitizeStatePatch(patch: unknown): Partial<DrawState> {
     clean.color = input['color'].toLowerCase();
   }
   if (typeof input['fill'] === 'boolean') clean.fill = input['fill'];
+  if (isBoard(input['board'])) clean.board = input['board'];
   if (typeof input['size'] === 'number' && Number.isFinite(input['size'])) {
     clean.size = Math.min(MAX_SIZE, Math.max(MIN_SIZE, Math.round(input['size'])));
   }
   return clean;
 }
 
-/** Applique un patch déjà validé ; renvoie le même objet si rien ne change. */
+/**
+ * Applique un patch déjà validé ; renvoie le même objet si rien ne change.
+ *
+ * Règle du tableau : l'ouvrir passe en mode dessin (on ouvre un tableau pour dessiner),
+ * et repasser en mode passif le ferme (un fond opaque traversé par les clics serait
+ * déroutant). Elle s'applique quel que soit le déclencheur : clavier, barre, menu.
+ */
 export function applyStatePatch(state: DrawState, patch: Partial<DrawState>): DrawState {
   const next = { ...state, ...patch };
+  if (next.board !== 'none' && next.board !== state.board) next.mode = 'draw';
+  else if (next.mode === 'passive' && state.mode === 'draw') next.board = 'none';
   const changed = (Object.keys(next) as (keyof DrawState)[]).some((k) => next[k] !== state[k]);
   return changed ? next : state;
 }

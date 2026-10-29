@@ -59,3 +59,12 @@ body.mode-draw {
   outline-offset: 4px;
   cursor: text;
 }
+
+/* Tableau blanc / noir : fond opaque sous les calques de dessin, sur tous les écrans. */
+body[data-board='white'] {
+  background: #fafafa;
+}
+
+body[data-board='black'] {
+  background: #141417;
+}

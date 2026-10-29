@@ -91,6 +91,7 @@ function render(next: DrawState): void {
   const sizeChanged = next.size !== state.size;
   state = next;
   document.body.classList.toggle('mode-draw', state.mode === 'draw');
+  document.body.dataset['board'] = state.board;
   document.documentElement.style.setProperty('--accent', state.color);
   activeCanvas.style.cursor = getTool(state.tool)?.cursor ?? 'default';
   // La saisie en cours suit couleur et taille ; changer d'outil la valide.
@@ -124,11 +125,14 @@ const actions: ActionHandlers = {
     toolContext.commitShapes(history.present.filter((s) => s !== selected));
     toolContext.setSelection(null);
   },
-  // Échap : désélectionne d'abord, puis quitte le mode dessin.
+  // Échap, par étapes : désélectionner, puis fermer le tableau, puis quitter le mode dessin.
   exit: () => {
     if (selectedShape()) toolContext.setSelection(null);
+    else if (state.board !== 'none') api.updateState({ board: 'none' });
     else api.updateState({ mode: 'passive' });
   },
+  // W / B : ouvre le tableau, ou le ferme s'il est déjà affiché.
+  board: ({ board }) => api.updateState({ board: state.board === board ? 'none' : board }),
   tool: ({ tool }) => api.updateState({ tool }),
   color: ({ index }) => {
     const color = PALETTE[index];
