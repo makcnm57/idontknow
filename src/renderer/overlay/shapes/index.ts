@@ -3,6 +3,7 @@
  * Ajouter une forme = créer son fichier dans `shapes/` et l'ajouter à la table.
  */
 import type { Shape } from '@shared/types';
+import { drawBadge } from './badge';
 import { drawEllipse, drawRect } from './box';
 import { drawLine } from './line';
 import { drawStroke } from './stroke';
@@ -22,6 +23,7 @@ const renderers: { [K in ShapeKind]: ShapeRenderer<ShapeOfKind<K>> } = {
   rect: drawRect,
   ellipse: drawEllipse,
   text: drawText,
+  badge: drawBadge,
 };
 
 /** Dessine une forme. `complete` : forme validée (faux pendant le tracé). */

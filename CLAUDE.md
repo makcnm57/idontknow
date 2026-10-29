@@ -119,7 +119,7 @@ La barre d'outils est une **fenêtre séparée**, petite, déplaçable, toujours
 - [x] Formes pleines ou contour uniquement
 - [x] **Texte** (clic pour placer, édition en ligne, taille de police réglable)
 - [x] **Outil sélection** : sélectionner, déplacer, supprimer un élément
-- [ ] **Numérotation** : pastilles 1, 2, 3… pour annoter des étapes
+- [x] **Numérotation** : pastilles 1, 2, 3… pour annoter des étapes
 
 ### V3 — Présentation
 - [ ] **Pointeur laser** : trait lumineux qui s'efface après ~1 s
@@ -149,6 +149,7 @@ La barre d'outils est une **fenêtre séparée**, petite, déplaçable, toujours
 | Rectangle / Ellipse | `R` / `O` |
 | Texte | `T` |
 | Sélection | `V` |
+| Numérotation | `N` |
 | Laser | `K` |
 | Projecteur | `S` |
 | Loupe | `Z` |

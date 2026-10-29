@@ -30,6 +30,7 @@ const translators: {
   rect: moveBox,
   ellipse: moveBox,
   text: moveBox,
+  badge: (shape, dx, dy) => ({ ...shape, x: shape.x + dx, y: shape.y + dy }),
 };
 
 /** Forme déplacée de (dx, dy). */
@@ -73,6 +74,7 @@ const bounders: { [K in ShapeKind]: (shape: ShapeOfKind<K>) => Box } = {
   rect: (shape) => padBox(shape, shape.fill ? 0 : shape.size / 2),
   ellipse: (shape) => padBox(shape, shape.fill ? 0 : shape.size / 2),
   text: (shape) => padBox(shape, 0),
+  badge: (shape) => pointsBounds([shape], shape.radius),
 };
 
 /** Boîte englobante visible d'une forme (épaisseur du trait comprise). */

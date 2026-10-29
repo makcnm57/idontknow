@@ -2,6 +2,7 @@
  * Hit-test des formes (logique pure) : la gomme supprime les éléments touchés.
  */
 import type {
+  BadgeShape,
   EllipseShape,
   LineShape,
   Point,
@@ -135,6 +136,11 @@ export function hitText(shape: TextShape, p: Point, radius: number): boolean {
   );
 }
 
+/** Pastille : le disque. */
+export function hitBadge(shape: BadgeShape, p: Point, radius: number): boolean {
+  return Math.hypot(p.x - shape.x, p.y - shape.y) <= shape.radius + radius;
+}
+
 const hitTesters: {
   [K in Shape['kind']]: (shape: Extract<Shape, { kind: K }>, p: Point, radius: number) => boolean;
 } = {
@@ -143,6 +149,7 @@ const hitTesters: {
   rect: hitRect,
   ellipse: hitEllipse,
   text: hitText,
+  badge: hitBadge,
 };
 
 type HitTester = (shape: Shape, p: Point, radius: number) => boolean;

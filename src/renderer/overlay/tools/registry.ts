@@ -4,6 +4,7 @@
  */
 import type { ToolId } from '@shared/types';
 import { arrowTool } from './arrow';
+import { badgeTool } from './badge';
 import { ellipseTool } from './ellipse';
 import { eraserTool } from './eraser';
 import { highlighterTool } from './highlighter';
@@ -25,6 +26,7 @@ const ALL_TOOLS = [
   rectTool,
   ellipseTool,
   textTool,
+  badgeTool,
 ];
 for (const tool of ALL_TOOLS) tools[tool.id] = tool;
 

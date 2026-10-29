@@ -14,6 +14,7 @@ export const TOOL_IDS = [
   'ellipse',
   'text',
   'select',
+  'number',
 ] as const;
 export type ToolId = (typeof TOOL_IDS)[number];
 
@@ -97,8 +98,17 @@ export interface TextShape extends Box {
   color: string;
 }
 
+/** Pastille numérotée (étapes 1, 2, 3…), centrée en (x, y). */
+export interface BadgeShape extends Point {
+  id: string;
+  kind: 'badge';
+  number: number;
+  radius: number;
+  color: string;
+}
+
 /** Élément vectoriel affiché sur le canvas. */
-export type Shape = StrokeShape | LineShape | RectShape | EllipseShape | TextShape;
+export type Shape = StrokeShape | LineShape | RectShape | EllipseShape | TextShape | BadgeShape;
 
 /** Réglages de dessin courants, partagés entre la barre d'outils et tous les overlays. */
 export interface DrawState {

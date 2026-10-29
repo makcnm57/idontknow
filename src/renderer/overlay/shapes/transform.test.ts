@@ -29,6 +29,7 @@ const shapes: Shape[] = [
     fontSize: 16,
     color: '#000000',
   },
+  { id: 'a', kind: 'badge', x: 5, y: 5, number: 3, radius: 18, color: '#000000' },
 ];
 
 describe('translateShape', () => {

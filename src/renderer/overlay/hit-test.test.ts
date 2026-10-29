@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { StrokeShape } from '@shared/types';
 import {
   distanceToSegment,
+  hitBadge,
   hitEllipse,
   hitLine,
   hitRect,
@@ -190,5 +191,23 @@ describe('topmostHit', () => {
 
   it('ne renvoie rien dans le vide', () => {
     expect(topmostHit([square('a')], { x: 200, y: 200 }, 2)).toBeUndefined();
+  });
+});
+
+describe('hitBadge', () => {
+  const badge = {
+    id: 'b',
+    kind: 'badge' as const,
+    x: 50,
+    y: 50,
+    number: 1,
+    radius: 18,
+    color: '#000000',
+  };
+
+  it('touche le disque, marge comprise', () => {
+    expect(hitBadge(badge, { x: 50, y: 50 }, 0)).toBe(true);
+    expect(hitBadge(badge, { x: 72, y: 50 }, 6)).toBe(true);
+    expect(hitBadge(badge, { x: 80, y: 50 }, 6)).toBe(false);
   });
 });
