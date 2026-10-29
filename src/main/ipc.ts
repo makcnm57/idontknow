@@ -7,7 +7,7 @@ import { IpcChannel } from '@shared/ipc-channels';
 import type { AppInfo, DrawState } from '@shared/types';
 import { getState, releaseToolbarFocus, setVisible, updateState } from './controller';
 import { registerHistoryHandlers } from './history-router';
-import { beginToolbarFocus, getToolbar } from './toolbar';
+import { beginToolbarFocus, getToolbar, resizeToolbar } from './toolbar';
 
 export function registerIpcHandlers(): void {
   ipcMain.handle(IpcChannel.AppInfo, (): AppInfo => ({
@@ -32,6 +32,10 @@ export function registerIpcHandlers(): void {
   });
   ipcMain.on(IpcChannel.ToolbarRelease, (event) => {
     if (fromToolbar(event)) releaseToolbarFocus();
+  });
+  ipcMain.on(IpcChannel.ToolbarResize, (event, payload: unknown) => {
+    const width = (payload as { width?: unknown } | null)?.width;
+    if (fromToolbar(event) && typeof width === 'number') resizeToolbar(width);
   });
 
   registerHistoryHandlers();

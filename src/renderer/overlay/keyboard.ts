@@ -23,6 +23,10 @@ const COMBOS: Record<string, OverlayAction> = {
   p: { type: 'tool', tool: 'pen' },
   h: { type: 'tool', tool: 'highlighter' },
   e: { type: 'tool', tool: 'eraser' },
+  l: { type: 'tool', tool: 'line' },
+  a: { type: 'tool', tool: 'arrow' },
+  r: { type: 'tool', tool: 'rect' },
+  o: { type: 'tool', tool: 'ellipse' },
 };
 
 /**

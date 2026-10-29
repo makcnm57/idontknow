@@ -11,13 +11,20 @@ import {
 describe('sanitizeStatePatch', () => {
   it('garde les champs valides', () => {
     expect(
-      sanitizeStatePatch({ tool: 'eraser', color: '#00FF00', size: 12, mode: 'draw' }),
-    ).toEqual({ tool: 'eraser', color: '#00ff00', size: 12, mode: 'draw' });
+      sanitizeStatePatch({ tool: 'rect', color: '#00FF00', size: 12, mode: 'draw', fill: true }),
+    ).toEqual({ tool: 'rect', color: '#00ff00', size: 12, mode: 'draw', fill: true });
   });
 
   it('ignore les valeurs inconnues ou mal typées', () => {
     expect(
-      sanitizeStatePatch({ tool: 'rm -rf', color: 'red', size: '12', mode: 'fly', extra: 1 }),
+      sanitizeStatePatch({
+        tool: 'rm -rf',
+        color: 'red',
+        size: '12',
+        mode: 'fly',
+        fill: 'yes',
+        extra: 1,
+      }),
     ).toEqual({});
   });
 

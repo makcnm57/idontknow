@@ -34,6 +34,8 @@ export const IpcChannel = {
    */
   ToolbarFocus: 'toolbar:focus',
   ToolbarRelease: 'toolbar:release',
+  /** barre d'outils → main : largeur de son contenu, pour ajuster la fenêtre. */
+  ToolbarResize: 'toolbar:resize',
 
   /** main → overlay : annuler / rétablir une étape locale. */
   OverlayUndo: 'overlay:undo',
@@ -61,6 +63,7 @@ export interface IpcSendMap {
   [IpcChannel.HistoryClear]: undefined;
   [IpcChannel.HistoryCommitted]: { groupId?: string };
   [IpcChannel.ToolbarRelease]: undefined;
+  [IpcChannel.ToolbarResize]: { width: number };
 }
 
 /** Événements du main vers les renderers : charge utile. */

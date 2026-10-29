@@ -1,12 +1,10 @@
 /**
  * Hit-test des formes (logique pure) : la gomme supprime les éléments touchés.
  */
-import type { Shape, StrokeShape } from '@shared/types';
+import type { EllipseShape, LineShape, Point, RectShape, Shape, StrokeShape } from '@shared/types';
+import { arrowHead } from './shapes/shape-geometry';
 
-export interface Point {
-  x: number;
-  y: number;
-}
+export type { Point };
 
 interface Bounds {
   minX: number;
@@ -70,14 +68,69 @@ export function hitStroke(shape: StrokeShape, p: Point, radius: number): boolean
   return false;
 }
 
+/** Ligne ou flèche : le segment, plus les deux côtés de la pointe. */
+export function hitLine(shape: LineShape, p: Point, radius: number): boolean {
+  const reach = radius + shape.size / 2;
+  if (distanceToSegment(p, shape.from, shape.to) <= reach) return true;
+  if (!shape.arrow) return false;
+  const [left, tip, right] = arrowHead(shape.from, shape.to, shape.size);
+  return distanceToSegment(p, left, tip) <= reach || distanceToSegment(p, right, tip) <= reach;
+}
+
+/** Rectangle : l'intérieur s'il est plein, sinon seulement ses bords. */
+export function hitRect(shape: RectShape, p: Point, radius: number): boolean {
+  const reach = radius + shape.size / 2;
+  const { x, y, width, height } = shape;
+  const inside =
+    p.x >= x - reach && p.x <= x + width + reach && p.y >= y - reach && p.y <= y + height + reach;
+  if (!inside) return false;
+  if (shape.fill) return true;
+  const corners: Point[] = [
+    { x, y },
+    { x: x + width, y },
+    { x: x + width, y: y + height },
+    { x, y: y + height },
+  ];
+  return corners.some((corner, i) => {
+    const next = corners[(i + 1) % corners.length] ?? corner;
+    return distanceToSegment(p, corner, next) <= reach;
+  });
+}
+
+/**
+ * Ellipse : l'intérieur si elle est pleine, sinon une bande autour du contour.
+ * La distance au contour est approchée par l'écart au rayon normalisé, ramené au plus
+ * petit rayon : exact pour un cercle, légèrement prudent pour une ellipse allongée.
+ */
+export function hitEllipse(shape: EllipseShape, p: Point, radius: number): boolean {
+  const reach = radius + shape.size / 2;
+  const rx = shape.width / 2;
+  const ry = shape.height / 2;
+  const cx = shape.x + rx;
+  const cy = shape.y + ry;
+  // Ellipse aplatie (largeur ou hauteur nulle) : c'est un segment.
+  if (rx < 1 || ry < 1) {
+    return distanceToSegment(p, { x: cx - rx, y: cy - ry }, { x: cx + rx, y: cy + ry }) <= reach;
+  }
+  const normalized = Math.hypot((p.x - cx) / rx, (p.y - cy) / ry);
+  if (shape.fill && normalized <= 1) return true;
+  return Math.abs(normalized - 1) * Math.min(rx, ry) <= reach;
+}
+
 const hitTesters: {
   [K in Shape['kind']]: (shape: Extract<Shape, { kind: K }>, p: Point, radius: number) => boolean;
 } = {
   stroke: hitStroke,
+  line: hitLine,
+  rect: hitRect,
+  ellipse: hitEllipse,
 };
 
+type HitTester = (shape: Shape, p: Point, radius: number) => boolean;
+
 export function hitShape(shape: Shape, p: Point, radius: number): boolean {
-  return hitTesters[shape.kind](shape, p, radius);
+  // La table garantit que le test correspond au `kind` : le transtypage est sûr.
+  return (hitTesters[shape.kind] as HitTester)(shape, p, radius);
 }
 
 /**

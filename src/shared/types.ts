@@ -4,7 +4,15 @@
  */
 
 /** Identifiants des outils. Complété à chaque phase (V2 : formes, V3 : présentation…). */
-export const TOOL_IDS = ['pen', 'highlighter', 'eraser'] as const;
+export const TOOL_IDS = [
+  'pen',
+  'highlighter',
+  'eraser',
+  'line',
+  'arrow',
+  'rect',
+  'ellipse',
+] as const;
 export type ToolId = (typeof TOOL_IDS)[number];
 
 /** Mode d'interaction de l'overlay. */
@@ -14,10 +22,14 @@ export type InteractionMode =
   /** Click-through : les annotations restent visibles, les clics passent aux fenêtres dessous. */
   | 'passive';
 
-/** Point d'un tracé, en pixels CSS relatifs à l'écran, avec la pression du stylet (0 à 1). */
-export interface StrokePoint {
+/** Point en pixels CSS relatifs à l'écran. */
+export interface Point {
   x: number;
   y: number;
+}
+
+/** Point d'un tracé, avec la pression du stylet (0 à 1). */
+export interface StrokePoint extends Point {
   pressure: number;
 }
 
@@ -33,14 +45,54 @@ export interface StrokeShape {
   simulatePressure: boolean;
 }
 
-/** Élément vectoriel affiché sur le canvas. Union étendue en V2 (rect, ellipse, flèche, texte…). */
-export type Shape = StrokeShape;
+/** Segment, avec ou sans pointe de flèche à l'arrivée. */
+export interface LineShape {
+  id: string;
+  kind: 'line';
+  from: Point;
+  to: Point;
+  arrow: boolean;
+  color: string;
+  size: number;
+}
+
+/** Boîte englobante (largeur et hauteur toujours positives). */
+export interface Box {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/** Forme définie par une boîte : rectangle, ou ellipse inscrite dans la boîte. */
+interface BoxShapeBase extends Box {
+  id: string;
+  /** Vrai : forme pleine ; faux : contour seulement. */
+  fill: boolean;
+  color: string;
+  size: number;
+}
+
+export interface RectShape extends BoxShapeBase {
+  kind: 'rect';
+}
+
+export interface EllipseShape extends BoxShapeBase {
+  kind: 'ellipse';
+}
+
+export type BoxShape = RectShape | EllipseShape;
+
+/** Élément vectoriel affiché sur le canvas. */
+export type Shape = StrokeShape | LineShape | RectShape | EllipseShape;
 
 /** Réglages de dessin courants, partagés entre la barre d'outils et tous les overlays. */
 export interface DrawState {
   tool: ToolId;
   color: string;
   size: number;
+  /** Rectangles et ellipses pleins (vrai) ou en contour (faux). */
+  fill: boolean;
   mode: InteractionMode;
 }
 

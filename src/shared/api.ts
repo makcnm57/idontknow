@@ -23,6 +23,8 @@ export interface ScreenDrawApi {
   // Barre d'outils : activable le temps du sélecteur de couleur natif.
   requestToolbarFocus(): Promise<void>;
   releaseToolbarFocus(): void;
+  /** Ajuste la largeur de la fenêtre de la barre à son contenu. */
+  resizeToolbar(width: number): void;
 
   // Côté overlay : ordres venant du main et signalement des nouvelles étapes.
   onUndoRequested(listener: () => void): () => void;

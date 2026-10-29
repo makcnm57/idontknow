@@ -63,6 +63,12 @@ const sizeButtons = SIZE_PRESETS.map((size, index) => {
   return { size: size as number, button };
 });
 
+// --- Formes pleines ou en contour (rectangle, ellipse).
+const fillToggle = $<HTMLButtonElement>('#fill-toggle');
+fillToggle.addEventListener('click', () => {
+  if (currentState) api.updateState({ fill: !currentState.fill });
+});
+
 // --- Historique, mode, masquer.
 const undoButton = $<HTMLButtonElement>('#undo');
 const redoButton = $<HTMLButtonElement>('#redo');
@@ -101,6 +107,11 @@ function render(state: DrawState): void {
   customSwatch.style.setProperty('--swatch', state.color);
   customInput.value = state.color;
 
+  fillToggle.setAttribute('aria-pressed', String(state.fill));
+  fillToggle.title = state.fill
+    ? 'Formes pleines (cliquer pour : contour)'
+    : 'Formes en contour (cliquer pour : pleines)';
+
   for (const { size, button } of sizeButtons) {
     button.setAttribute('aria-pressed', String(size === state.size));
   }
@@ -110,6 +121,10 @@ function renderHistory(history: HistoryState): void {
   undoButton.disabled = !history.canUndo;
   redoButton.disabled = !history.canRedo;
 }
+
+// La fenêtre prend la largeur exacte de la barre (qui dépend du nombre d'outils).
+const toolbarElement = $<HTMLDivElement>('.toolbar');
+api.resizeToolbar(Math.ceil(toolbarElement.getBoundingClientRect().width));
 
 api.onStateChanged(render);
 api.onHistoryChanged(renderHistory);

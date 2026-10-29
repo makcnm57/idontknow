@@ -38,6 +38,8 @@ describe('resolveShortcut', () => {
     expect(resolveShortcut(key('p', 'KeyP'))).toEqual({ type: 'tool', tool: 'pen' });
     expect(resolveShortcut(key('H', 'KeyH', { shift: true }))).toBeUndefined();
     expect(resolveShortcut(key('e', 'KeyE'))).toEqual({ type: 'tool', tool: 'eraser' });
+    expect(resolveShortcut(key('a', 'KeyQ'))).toEqual({ type: 'tool', tool: 'arrow' });
+    expect(resolveShortcut(key('o', 'KeyO'))).toEqual({ type: 'tool', tool: 'ellipse' });
   });
 
   it('choisit la couleur par la touche physique, même en AZERTY sans Maj', () => {

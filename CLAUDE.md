@@ -115,8 +115,8 @@ La barre d'outils est une **fenêtre séparée**, petite, déplaçable, toujours
 - [x] Icône dans la zone de notification avec menu (Afficher, Paramètres, Quitter)
 
 ### V2 — Formes et texte
-- [ ] **Ligne**, **flèche**, **rectangle**, **ellipse** (Shift = contraindre : ligne droite à 45°, carré, cercle)
-- [ ] Formes pleines ou contour uniquement
+- [x] **Ligne**, **flèche**, **rectangle**, **ellipse** (Shift = contraindre : ligne droite à 45°, carré, cercle)
+- [x] Formes pleines ou contour uniquement
 - [ ] **Texte** (clic pour placer, édition en ligne, taille de police réglable)
 - [ ] **Outil sélection** : sélectionner, déplacer, supprimer un élément
 - [ ] **Numérotation** : pastilles 1, 2, 3… pour annoter des étapes

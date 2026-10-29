@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import type { StrokeShape } from '@shared/types';
-import { distanceToSegment, hitStroke, interpolate } from './hit-test';
+import {
+  distanceToSegment,
+  hitEllipse,
+  hitLine,
+  hitRect,
+  hitStroke,
+  interpolate,
+} from './hit-test';
+import { arrowHead } from './shapes/shape-geometry';
 
 function stroke(points: [number, number][], size = 4): StrokeShape {
   return {
@@ -73,5 +81,68 @@ describe('interpolate', () => {
 
   it('renvoie au moins le point d’arrivée', () => {
     expect(interpolate({ x: 0, y: 0 }, { x: 0, y: 0 }, 10)).toEqual([{ x: 0, y: 0 }]);
+  });
+});
+
+const base = { id: 's', color: '#000000', size: 4 };
+
+describe('hitLine', () => {
+  const arrow = {
+    ...base,
+    kind: 'line' as const,
+    from: { x: 0, y: 0 },
+    to: { x: 100, y: 0 },
+    arrow: true,
+  };
+
+  it('touche le segment', () => {
+    expect(hitLine(arrow, { x: 50, y: 8 }, 6)).toBe(true);
+    expect(hitLine(arrow, { x: 50, y: 30 }, 6)).toBe(false);
+  });
+
+  it('touche une aile de la pointe de flèche, pas celle d’une simple ligne', () => {
+    const [left] = arrowHead(arrow.from, arrow.to, arrow.size);
+    expect(hitLine(arrow, left, 2)).toBe(true);
+    expect(hitLine({ ...arrow, arrow: false }, { x: left.x, y: left.y - 5 }, 2)).toBe(false);
+  });
+});
+
+describe('hitRect', () => {
+  const rect = { ...base, kind: 'rect' as const, x: 0, y: 0, width: 100, height: 50, fill: false };
+
+  it('ne touche que les bords d’un rectangle vide', () => {
+    expect(hitRect(rect, { x: 50, y: 2 }, 4)).toBe(true);
+    expect(hitRect(rect, { x: 50, y: 25 }, 4)).toBe(false);
+  });
+
+  it('touche l’intérieur d’un rectangle plein', () => {
+    expect(hitRect({ ...rect, fill: true }, { x: 50, y: 25 }, 4)).toBe(true);
+    expect(hitRect({ ...rect, fill: true }, { x: 150, y: 25 }, 4)).toBe(false);
+  });
+});
+
+describe('hitEllipse', () => {
+  const circle = {
+    ...base,
+    kind: 'ellipse' as const,
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    fill: false,
+  };
+
+  it('ne touche que le contour d’une ellipse vide', () => {
+    expect(hitEllipse(circle, { x: 100, y: 50 }, 4)).toBe(true);
+    expect(hitEllipse(circle, { x: 50, y: 50 }, 4)).toBe(false);
+  });
+
+  it('touche le centre d’une ellipse pleine', () => {
+    expect(hitEllipse({ ...circle, fill: true }, { x: 50, y: 50 }, 4)).toBe(true);
+  });
+
+  it('gère une ellipse aplatie comme un segment', () => {
+    const flat = { ...circle, height: 0 };
+    expect(hitEllipse(flat, { x: 50, y: 3 }, 4)).toBe(true);
   });
 });

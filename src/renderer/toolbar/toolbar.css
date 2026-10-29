@@ -21,8 +21,10 @@ body {
   user-select: none;
 }
 
+/* La largeur suit le contenu ; la fenêtre est redimensionnée en conséquence. */
 .toolbar {
   box-sizing: border-box;
+  width: max-content;
   height: 100%;
   display: flex;
   align-items: center;
@@ -92,7 +94,7 @@ button:disabled {
 }
 
 .icon-button {
-  width: 34px;
+  width: 32px;
   height: 34px;
   display: grid;
   place-items: center;
@@ -196,4 +198,9 @@ button:disabled {
 body.mode-draw .mode-dot {
   background: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* Bascule plein / contour : le carré se remplit quand les formes sont pleines. */
+#fill-toggle[aria-pressed='true'] .fill-icon {
+  fill: currentColor;
 }

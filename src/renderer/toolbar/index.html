@@ -57,6 +57,67 @@
 
       <span class="divider" aria-hidden="true"></span>
 
+      <div class="group" role="group" aria-label="Formes">
+        <button
+          class="icon-button"
+          type="button"
+          data-tool="line"
+          title="Ligne (L) — Maj : 45°"
+          aria-label="Ligne"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 19L19 5" />
+          </svg>
+        </button>
+        <button
+          class="icon-button"
+          type="button"
+          data-tool="arrow"
+          title="Flèche (A) — Maj : 45°"
+          aria-label="Flèche"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 19L19 5" />
+            <path d="M10 5h9v9" />
+          </svg>
+        </button>
+        <button
+          class="icon-button"
+          type="button"
+          data-tool="rect"
+          title="Rectangle (R) — Maj : carré"
+          aria-label="Rectangle"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4" y="6" width="16" height="12" rx="1" />
+          </svg>
+        </button>
+        <button
+          class="icon-button"
+          type="button"
+          data-tool="ellipse"
+          title="Ellipse (O) — Maj : cercle"
+          aria-label="Ellipse"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <ellipse cx="12" cy="12" rx="8" ry="6" />
+          </svg>
+        </button>
+        <button
+          id="fill-toggle"
+          class="icon-button"
+          type="button"
+          title="Rectangles et ellipses : plein ou contour"
+          aria-label="Formes pleines"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect class="fill-icon" x="5" y="5" width="14" height="14" rx="2" />
+          </svg>
+        </button>
+      </div>
+
+      <span class="divider" aria-hidden="true"></span>
+
       <div id="colors" class="group colors" role="group" aria-label="Couleurs">
         <label id="custom-swatch" class="swatch custom" title="Couleur personnalisée">
           <input id="custom-color" type="color" aria-label="Couleur personnalisée" />

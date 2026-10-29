@@ -36,6 +36,7 @@ const api: ScreenDrawApi = {
 
   requestToolbarFocus: (): Promise<void> => ipcRenderer.invoke(IpcChannel.ToolbarFocus),
   releaseToolbarFocus: () => send(IpcChannel.ToolbarRelease, undefined),
+  resizeToolbar: (width) => send(IpcChannel.ToolbarResize, { width }),
 
   onUndoRequested: (listener) => subscribe(IpcChannel.OverlayUndo, () => listener()),
   onRedoRequested: (listener) => subscribe(IpcChannel.OverlayRedo, () => listener()),

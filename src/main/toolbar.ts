@@ -7,7 +7,10 @@
 import { BrowserWindow, screen } from 'electron';
 import { hardenWindow, loadRendererPage, secureWebPreferences } from './window-utils';
 
+/** Largeur initiale ; ajustée ensuite au contenu par `resizeToolbar`. */
 const WIDTH = 784;
+const MIN_WIDTH = 200;
+const MAX_WIDTH = 2000;
 const HEIGHT = 52;
 const TOP_MARGIN = 16;
 
@@ -93,4 +96,18 @@ export function endToolbarFocus(): void {
   if (!win) return;
   win.setFocusable(false);
   win.setSkipTaskbar(true);
+}
+
+/**
+ * Ajuste la largeur de la fenêtre à celle de son contenu, en gardant la barre centrée
+ * sur sa position actuelle. La valeur vient du renderer : elle est bornée.
+ */
+export function resizeToolbar(contentWidth: number): void {
+  const win = getToolbar();
+  if (!win || !Number.isFinite(contentWidth)) return;
+  const width = Math.round(Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, contentWidth)));
+  const bounds = win.getBounds();
+  if (width === bounds.width) return;
+  const centerX = bounds.x + bounds.width / 2;
+  win.setBounds({ ...bounds, x: Math.round(centerX - width / 2), width });
 }

@@ -12,6 +12,7 @@ export const DEFAULT_DRAW_STATE: DrawState = {
   tool: 'pen',
   color: PALETTE[0],
   size: SIZE_PRESETS[1],
+  fill: false,
   mode: 'passive',
 };
 
@@ -48,6 +49,7 @@ export function sanitizeStatePatch(patch: unknown): Partial<DrawState> {
   if (typeof input['color'] === 'string' && HEX_COLOR.test(input['color'])) {
     clean.color = input['color'].toLowerCase();
   }
+  if (typeof input['fill'] === 'boolean') clean.fill = input['fill'];
   if (typeof input['size'] === 'number' && Number.isFinite(input['size'])) {
     clean.size = Math.min(MAX_SIZE, Math.max(MIN_SIZE, Math.round(input['size'])));
   }
