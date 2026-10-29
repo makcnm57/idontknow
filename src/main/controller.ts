@@ -13,7 +13,8 @@ import {
   setOverlayMode,
   setOverlayVisible,
 } from './overlay';
-import { getToolbar, raiseToolbar, setToolbarVisible } from './toolbar';
+import { forgetOverlay } from './history-router';
+import { endToolbarFocus, getToolbar, raiseToolbar, setToolbarVisible } from './toolbar';
 import { sendTo } from './window-utils';
 
 let state: DrawState = DEFAULT_DRAW_STATE;
@@ -51,12 +52,25 @@ function focusIfDrawing(): void {
   }
 }
 
+/** Fin du sélecteur de couleur : la barre redevient non activable et le focus est rendu. */
+export function releaseToolbarFocus(): void {
+  endToolbarFocus();
+  // Le focus est passé à un overlay : on l'y laisse en mode dessin, sinon on le rend
+  // à l'application d'en dessous (même mécanisme que le retour en mode passif).
+  if (visible && state.mode === 'draw') focusIfDrawing();
+  else releaseOverlayFocus();
+  raiseToolbar();
+}
+
 /** Applique l'état courant à une fenêtre overlay (nouvelle ou existante). */
 export function configureOverlay(win: BrowserWindow): void {
   setOverlayMode(win, state.mode);
   setOverlayVisible(win, visible);
   // Activer un overlay le fait passer devant la barre d'outils : on la remonte.
   win.on('focus', raiseToolbar);
+  // L'identifiant n'est plus lisible une fois la fenêtre détruite : on le capture ici.
+  const webContentsId = win.webContents.id;
+  win.on('closed', () => forgetOverlay(webContentsId));
 }
 
 export function updateState(patch: Partial<DrawState>): void {

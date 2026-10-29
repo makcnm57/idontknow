@@ -5,7 +5,7 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron';
 import type { ScreenDrawApi } from '@shared/api';
 import { IpcChannel, type IpcEventMap, type IpcSendMap } from '@shared/ipc-channels';
-import type { AppInfo, DrawState } from '@shared/types';
+import type { AppInfo, DrawState, HistoryState } from '@shared/types';
 
 function send<C extends keyof IpcSendMap>(channel: C, payload: IpcSendMap[C]): void {
   ipcRenderer.send(channel, payload);
@@ -27,6 +27,21 @@ const api: ScreenDrawApi = {
   updateState: (patch) => send(IpcChannel.StateUpdate, patch),
   onStateChanged: (listener) => subscribe(IpcChannel.StateChanged, listener),
   hideOverlay: () => send(IpcChannel.OverlayHide, undefined),
+
+  undo: () => send(IpcChannel.HistoryUndo, undefined),
+  redo: () => send(IpcChannel.HistoryRedo, undefined),
+  clearAll: () => send(IpcChannel.HistoryClear, undefined),
+  getHistoryState: (): Promise<HistoryState> => ipcRenderer.invoke(IpcChannel.HistoryGet),
+  onHistoryChanged: (listener) => subscribe(IpcChannel.HistoryChanged, listener),
+
+  requestToolbarFocus: (): Promise<void> => ipcRenderer.invoke(IpcChannel.ToolbarFocus),
+  releaseToolbarFocus: () => send(IpcChannel.ToolbarRelease, undefined),
+
+  onUndoRequested: (listener) => subscribe(IpcChannel.OverlayUndo, () => listener()),
+  onRedoRequested: (listener) => subscribe(IpcChannel.OverlayRedo, () => listener()),
+  onClearRequested: (listener) =>
+    subscribe(IpcChannel.OverlayClear, ({ groupId }) => listener(groupId)),
+  notifyCommitted: (groupId) => send(IpcChannel.HistoryCommitted, { groupId }),
 };
 
 contextBridge.exposeInMainWorld('screendraw', api);

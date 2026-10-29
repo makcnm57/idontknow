@@ -44,6 +44,12 @@ export interface DrawState {
   mode: InteractionMode;
 }
 
+/** Possibilité d'annuler / rétablir (pour griser les boutons de la barre). */
+export interface HistoryState {
+  canUndo: boolean;
+  canRedo: boolean;
+}
+
 /** Informations sur l'application, exposées au renderer. */
 export interface AppInfo {
   name: string;

@@ -14,6 +14,104 @@
       <div class="drag-handle" title="Déplacer la barre" aria-hidden="true">
         <span></span><span></span><span></span>
       </div>
+
+      <div class="group" role="group" aria-label="Outils">
+        <button
+          class="icon-button"
+          type="button"
+          data-tool="pen"
+          title="Stylo (P)"
+          aria-label="Stylo"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 20l1-4L16 5l3 3L8 19l-4 1z" />
+            <path d="M14 7l3 3" />
+          </svg>
+        </button>
+        <button
+          class="icon-button"
+          type="button"
+          data-tool="highlighter"
+          title="Surligneur (H)"
+          aria-label="Surligneur"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 4l5 5-8 8H7v-5l8-8z" />
+            <path d="M7 17l-3 3h6" />
+          </svg>
+        </button>
+        <button
+          class="icon-button"
+          type="button"
+          data-tool="eraser"
+          title="Gomme (E)"
+          aria-label="Gomme"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 20l-4-4L14 6l6 6-8 8H8z" />
+            <path d="M9 11l6 6" />
+            <path d="M12 20h8" />
+          </svg>
+        </button>
+      </div>
+
+      <span class="divider" aria-hidden="true"></span>
+
+      <div id="colors" class="group colors" role="group" aria-label="Couleurs">
+        <label id="custom-swatch" class="swatch custom" title="Couleur personnalisée">
+          <input id="custom-color" type="color" aria-label="Couleur personnalisée" />
+        </label>
+      </div>
+
+      <span class="divider" aria-hidden="true"></span>
+
+      <div id="sizes" class="group" role="group" aria-label="Épaisseur"></div>
+
+      <span class="divider" aria-hidden="true"></span>
+
+      <div class="group" role="group" aria-label="Historique">
+        <button
+          id="undo"
+          class="icon-button"
+          type="button"
+          title="Annuler (Ctrl+Z)"
+          aria-label="Annuler"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 14L4 9l5-5" />
+            <path d="M4 9h10a6 6 0 0 1 0 12h-3" />
+          </svg>
+        </button>
+        <button
+          id="redo"
+          class="icon-button"
+          type="button"
+          title="Rétablir (Ctrl+Y)"
+          aria-label="Rétablir"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 14l5-5-5-5" />
+            <path d="M20 9H10a6 6 0 0 0 0 12h3" />
+          </svg>
+        </button>
+        <button
+          id="clear"
+          class="icon-button"
+          type="button"
+          title="Tout effacer (Suppr)"
+          aria-label="Tout effacer"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16" />
+            <path d="M9 7V4h6v3" />
+            <path d="M6 7l1 13h10l1-13" />
+            <path d="M10 11v5M14 11v5" />
+          </svg>
+        </button>
+      </div>
+
+      <span class="divider" aria-hidden="true"></span>
+
       <button
         id="mode-toggle"
         class="mode-toggle"
@@ -23,8 +121,14 @@
         <span class="mode-dot" aria-hidden="true"></span>
         <span id="mode-label">Passif</span>
       </button>
-      <button id="hide" class="icon-button" type="button" title="Masquer (Ctrl+Shift+D)">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+      <button
+        id="hide"
+        class="icon-button"
+        type="button"
+        title="Masquer (Ctrl+Shift+D)"
+        aria-label="Masquer"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>
       </button>

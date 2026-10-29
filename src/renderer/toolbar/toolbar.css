@@ -1,9 +1,10 @@
 :root {
-  --bg: rgba(28, 28, 34, 0.94);
+  --bg: rgba(28, 28, 34, 0.95);
   --border: rgba(255, 255, 255, 0.1);
   --text: #f2f2f5;
   --muted: #9a9aa6;
   --hover: rgba(255, 255, 255, 0.08);
+  --pressed: rgba(255, 255, 255, 0.16);
   --accent: #ff3b30;
   --passive: #6b6b78;
   font-family: system-ui, 'Segoe UI', sans-serif;
@@ -25,12 +26,25 @@ body {
   height: 100%;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   padding: 6px 8px 6px 4px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 14px;
   color: var(--text);
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  margin: 0 4px;
+  background: var(--border);
 }
 
 /* Zone de déplacement de la fenêtre (frameless). */
@@ -52,7 +66,8 @@ body {
   background: var(--muted);
 }
 
-button {
+button,
+.swatch {
   -webkit-app-region: no-drag;
   font: inherit;
   color: inherit;
@@ -62,7 +77,7 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background: var(--hover);
 }
 
@@ -71,9 +86,99 @@ button:focus-visible {
   outline-offset: 1px;
 }
 
+button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.icon-button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+}
+
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Outil ou taille sélectionné (les pastilles de couleur ont leur propre style). */
+.icon-button[aria-pressed='true'],
+.size-button[aria-pressed='true'] {
+  background: var(--pressed);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+/* Pastilles de couleur. */
+.colors {
+  gap: 4px;
+  padding: 0 2px;
+}
+
+.swatch {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+  transition: transform 0.1s;
+}
+
+.swatch:hover {
+  transform: scale(1.12);
+}
+
+.swatch[aria-pressed='true'],
+.swatch.custom.active {
+  box-shadow:
+    0 0 0 2px var(--bg),
+    0 0 0 4px var(--text);
+}
+
+/* Couleur personnalisée : arc-en-ciel tant qu'aucune couleur hors palette n'est choisie. */
+.swatch.custom {
+  display: block;
+  background: conic-gradient(#ff3b30, #ffcc00, #34c759, #007aff, #af52de, #ff3b30);
+}
+
+.swatch.custom.active {
+  background: var(--swatch);
+}
+
+.swatch.custom input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Tailles : un point dont le diamètre suggère l'épaisseur. */
+.size-button {
+  width: 30px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+}
+
+.size-dot {
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Bascule dessin / passif. */
 .mode-toggle {
-  flex: 1;
-  height: 36px;
+  height: 34px;
+  min-width: 84px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -91,18 +196,4 @@ button:focus-visible {
 body.mode-draw .mode-dot {
   background: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
-}
-
-.icon-button {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-}
-
-.icon-button svg {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
 }

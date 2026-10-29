@@ -1,4 +1,4 @@
-import type { AppInfo, DrawState } from './types';
+import type { AppInfo, DrawState, HistoryState } from './types';
 
 /**
  * API exposée au renderer par le preload, via `contextBridge` sous `window.screendraw`.
@@ -12,4 +12,21 @@ export interface ScreenDrawApi {
   /** S'abonne aux changements d'état. Renvoie la fonction de désabonnement. */
   onStateChanged(listener: (state: DrawState) => void): () => void;
   hideOverlay(): void;
+
+  // Historique global (barre d'outils et raccourcis clavier).
+  undo(): void;
+  redo(): void;
+  clearAll(): void;
+  getHistoryState(): Promise<HistoryState>;
+  onHistoryChanged(listener: (state: HistoryState) => void): () => void;
+
+  // Barre d'outils : activable le temps du sélecteur de couleur natif.
+  requestToolbarFocus(): Promise<void>;
+  releaseToolbarFocus(): void;
+
+  // Côté overlay : ordres venant du main et signalement des nouvelles étapes.
+  onUndoRequested(listener: () => void): () => void;
+  onRedoRequested(listener: () => void): () => void;
+  onClearRequested(listener: (groupId: string) => void): () => void;
+  notifyCommitted(groupId?: string): void;
 }

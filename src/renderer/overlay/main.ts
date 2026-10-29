@@ -1,6 +1,8 @@
 /**
  * Overlay de dessin : assemble l'état, l'historique, les calques et les entrées.
- * Chaque écran a son propre overlay, donc sa propre liste de formes et son historique.
+ * Chaque écran a son propre overlay, donc sa propre liste de formes et ses instantanés.
+ * L'ordre des actions entre écrans est tenu par le main (historique global) : chaque
+ * nouvelle étape lui est signalée, et annuler / rétablir / tout effacer passent par lui.
  */
 import { DEFAULT_DRAW_STATE, stepSize } from '@shared/draw-state';
 import { HIGHLIGHTER_SIZE_FACTOR, PALETTE } from '@shared/palette';
@@ -42,6 +44,7 @@ const toolContext: ToolContext = {
   commitShapes(next) {
     history.commit(next);
     layers.invalidateCommitted();
+    api.notifyCommitted();
   },
   amendShapes(next) {
     history.amend(next);
@@ -72,16 +75,10 @@ type ActionHandlers = {
 };
 
 const actions: ActionHandlers = {
-  undo: () => {
-    if (history.undo()) layers.invalidateCommitted();
-  },
-  redo: () => {
-    if (history.redo()) layers.invalidateCommitted();
-  },
-  // « Tout effacer » est une étape d'historique comme une autre : Ctrl+Z la rattrape.
-  clear: () => {
-    if (history.present.length > 0) toolContext.commitShapes([]);
-  },
+  // Annuler / rétablir / effacer agissent sur tous les écrans : le main décide lesquels.
+  undo: () => api.undo(),
+  redo: () => api.redo(),
+  clear: () => api.clearAll(),
   exit: () => api.updateState({ mode: 'passive' }),
   tool: ({ tool }) => api.updateState({ tool }),
   color: ({ index }) => {
@@ -110,6 +107,21 @@ window.addEventListener(
   },
   { passive: true },
 );
+
+// Ordres de l'historique global.
+api.onUndoRequested(() => {
+  if (history.undo()) layers.invalidateCommitted();
+});
+api.onRedoRequested(() => {
+  if (history.redo()) layers.invalidateCommitted();
+});
+// « Tout effacer » est une étape comme une autre, rattachée au groupe multi-écrans.
+api.onClearRequested((groupId) => {
+  if (history.present.length === 0) return;
+  history.commit([]);
+  layers.invalidateCommitted();
+  api.notifyCommitted(groupId);
+});
 
 window.addEventListener('resize', () => layers.resize());
 watchPixelRatio(() => layers.resize());
