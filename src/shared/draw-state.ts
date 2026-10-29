@@ -7,6 +7,8 @@ import { TOOL_IDS, type Board, type DrawState, type InteractionMode, type ToolId
 
 export const MIN_SIZE = 1;
 export const MAX_SIZE = 64;
+export const MIN_SPOTLIGHT_RADIUS = 40;
+export const MAX_SPOTLIGHT_RADIUS = 900;
 
 export const DEFAULT_DRAW_STATE: DrawState = {
   tool: 'pen',
@@ -14,8 +16,18 @@ export const DEFAULT_DRAW_STATE: DrawState = {
   size: SIZE_PRESETS[1],
   fill: false,
   board: 'none',
+  spotlight: false,
+  spotlightRadius: 180,
   mode: 'passive',
 };
+
+const clampRadius = (radius: number): number =>
+  Math.round(Math.min(MAX_SPOTLIGHT_RADIUS, Math.max(MIN_SPOTLIGHT_RADIUS, radius)));
+
+/** Rayon du projecteur après un cran de molette : ±10 %, pour un réglage fluide à toute taille. */
+export function stepSpotlightRadius(radius: number, direction: 1 | -1): number {
+  return clampRadius(radius * (direction === 1 ? 1.1 : 1 / 1.1));
+}
 
 /**
  * Taille suivante pour un cran de molette (`direction` : +1 ou -1).
@@ -56,6 +68,10 @@ export function sanitizeStatePatch(patch: unknown): Partial<DrawState> {
   }
   if (typeof input['fill'] === 'boolean') clean.fill = input['fill'];
   if (isBoard(input['board'])) clean.board = input['board'];
+  if (typeof input['spotlight'] === 'boolean') clean.spotlight = input['spotlight'];
+  if (typeof input['spotlightRadius'] === 'number' && Number.isFinite(input['spotlightRadius'])) {
+    clean.spotlightRadius = clampRadius(input['spotlightRadius']);
+  }
   if (typeof input['size'] === 'number' && Number.isFinite(input['size'])) {
     clean.size = Math.min(MAX_SIZE, Math.max(MIN_SIZE, Math.round(input['size'])));
   }

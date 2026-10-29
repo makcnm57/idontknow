@@ -123,7 +123,7 @@ La barre d'outils est une **fenêtre séparée**, petite, déplaçable, toujours
 
 ### V3 — Présentation
 - [x] **Pointeur laser** : trait lumineux qui s'efface après ~1 s
-- [ ] **Projecteur** (spotlight) : assombrit l'écran sauf un cercle autour du curseur
+- [x] **Projecteur** (spotlight) : assombrit l'écran sauf un cercle autour du curseur
 - [ ] **Loupe** : zoom autour du curseur (capture via desktopCapturer)
   - *Choix : capture figée à l'activation (une capture en direct filmerait la loupe elle-même, et exclure l'overlay des captures le masquerait aussi dans Discord/Teams/OBS).*
 - [x] **Tableau blanc / noir** : fond opaque pour dessiner sans l'écran derrière

@@ -123,6 +123,10 @@ export interface DrawState {
   fill: boolean;
   /** Tableau blanc / noir affiché sur tous les écrans. */
   board: Board;
+  /** Projecteur : assombrit les écrans sauf un cercle autour du curseur. */
+  spotlight: boolean;
+  /** Rayon du cercle éclairé (pixels CSS). */
+  spotlightRadius: number;
   mode: InteractionMode;
 }
 

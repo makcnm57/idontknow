@@ -68,3 +68,25 @@ body[data-board='white'] {
 body[data-board='black'] {
   background: #141417;
 }
+
+/*
+ * Projecteur : voile sombre percé d'un cercle au bord adouci autour du curseur.
+ * Au-dessus des annotations, sous rien d'interactif (aucun événement capté).
+ */
+.spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: radial-gradient(
+    circle var(--spot-r, 180px) at var(--spot-x, -10000px) var(--spot-y, -10000px),
+    transparent 88%,
+    rgba(0, 0, 0, 0.75) 100%
+  );
+}
+
+.spotlight.visible {
+  opacity: 1;
+}

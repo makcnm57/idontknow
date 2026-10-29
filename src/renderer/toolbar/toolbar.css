@@ -210,3 +210,9 @@ body.mode-draw .mode-dot {
   fill: currentColor;
   fill-opacity: 0.35;
 }
+
+/* Icône du projecteur : carré assombri, cercle clair. */
+.spot-shade {
+  fill: currentColor;
+  fill-opacity: 0.35;
+}

@@ -60,3 +60,9 @@ describe('tableaux', () => {
     expect(resolveShortcut(key('b', 'KeyB'))).toEqual({ type: 'board', board: 'black' });
   });
 });
+
+describe('projecteur', () => {
+  it('S bascule le projecteur', () => {
+    expect(resolveShortcut(key('s', 'KeyS'))).toEqual({ type: 'spotlight' });
+  });
+});

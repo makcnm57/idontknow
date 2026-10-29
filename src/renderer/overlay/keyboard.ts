@@ -11,7 +11,8 @@ export type OverlayAction =
   | { type: 'exit' }
   | { type: 'tool'; tool: ToolId }
   | { type: 'color'; index: number }
-  | { type: 'board'; board: 'white' | 'black' };
+  | { type: 'board'; board: 'white' | 'black' }
+  | { type: 'spotlight' };
 
 type KeyInfo = Pick<KeyboardEvent, 'key' | 'code' | 'ctrlKey' | 'metaKey' | 'shiftKey' | 'altKey'>;
 
@@ -34,6 +35,7 @@ const COMBOS: Record<string, OverlayAction> = {
   k: { type: 'tool', tool: 'laser' },
   w: { type: 'board', board: 'white' },
   b: { type: 'board', board: 'black' },
+  s: { type: 'spotlight' },
 };
 
 /**

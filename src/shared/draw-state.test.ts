@@ -3,9 +3,12 @@ import {
   applyStatePatch,
   DEFAULT_DRAW_STATE,
   MAX_SIZE,
+  MAX_SPOTLIGHT_RADIUS,
   MIN_SIZE,
+  MIN_SPOTLIGHT_RADIUS,
   sanitizeStatePatch,
   stepSize,
+  stepSpotlightRadius,
 } from './draw-state';
 
 describe('sanitizeStatePatch', () => {
@@ -104,5 +107,27 @@ describe('tableau blanc / noir', () => {
       board: 'black',
       mode: 'draw',
     });
+  });
+});
+
+describe('projecteur', () => {
+  it('valide l’activation et borne le rayon', () => {
+    expect(sanitizeStatePatch({ spotlight: true, spotlightRadius: 5000 })).toEqual({
+      spotlight: true,
+      spotlightRadius: MAX_SPOTLIGHT_RADIUS,
+    });
+    expect(sanitizeStatePatch({ spotlight: 'oui', spotlightRadius: Number.NaN })).toEqual({});
+  });
+
+  it('ajuste le rayon de 10 % par cran, dans les bornes', () => {
+    expect(stepSpotlightRadius(200, 1)).toBe(220);
+    expect(stepSpotlightRadius(220, -1)).toBe(200);
+    expect(stepSpotlightRadius(MIN_SPOTLIGHT_RADIUS, -1)).toBe(MIN_SPOTLIGHT_RADIUS);
+    expect(stepSpotlightRadius(MAX_SPOTLIGHT_RADIUS, 1)).toBe(MAX_SPOTLIGHT_RADIUS);
+  });
+
+  it('reste actif en repassant en mode passif (contrairement au tableau)', () => {
+    const drawing = applyStatePatch(DEFAULT_DRAW_STATE, { mode: 'draw', spotlight: true });
+    expect(applyStatePatch(drawing, { mode: 'passive' }).spotlight).toBe(true);
   });
 });

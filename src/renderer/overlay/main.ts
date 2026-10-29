@@ -4,7 +4,7 @@
  * L'ordre des actions entre écrans est tenu par le main (historique global) : chaque
  * nouvelle étape lui est signalée, et annuler / rétablir / tout effacer passent par lui.
  */
-import { DEFAULT_DRAW_STATE, stepSize } from '@shared/draw-state';
+import { DEFAULT_DRAW_STATE, stepSize, stepSpotlightRadius } from '@shared/draw-state';
 import { HIGHLIGHTER_SIZE_FACTOR, PALETTE } from '@shared/palette';
 import type { DrawState, Shape } from '@shared/types';
 import { LayeredCanvas, watchPixelRatio } from './canvas';
@@ -13,6 +13,7 @@ import { attachPointerInput, PEN_ERASER_BUTTON } from './input';
 import { attachKeyboard, type OverlayAction } from './keyboard';
 import { drawSelection } from './selection';
 import { SizeIndicator } from './size-indicator';
+import { Spotlight } from './spotlight';
 import { getTool } from './tools/registry';
 import { laserTrail } from './tools/laser';
 import { textEditor } from './tools/text';
@@ -32,6 +33,7 @@ let preview: Shape | null = null;
 let selectedId: string | null = null;
 const history = new History<readonly Shape[]>([]);
 const sizeIndicator = new SizeIndicator();
+const spotlight = new Spotlight();
 
 const activeCanvas = requireCanvas('layer-active');
 const layers = new LayeredCanvas(
@@ -92,6 +94,8 @@ function render(next: DrawState): void {
   state = next;
   document.body.classList.toggle('mode-draw', state.mode === 'draw');
   document.body.dataset['board'] = state.board;
+  spotlight.setEnabled(state.spotlight);
+  spotlight.setRadius(state.spotlightRadius);
   document.documentElement.style.setProperty('--accent', state.color);
   activeCanvas.style.cursor = getTool(state.tool)?.cursor ?? 'default';
   // La saisie en cours suit couleur et taille ; changer d'outil la valide.
@@ -125,13 +129,16 @@ const actions: ActionHandlers = {
     toolContext.commitShapes(history.present.filter((s) => s !== selected));
     toolContext.setSelection(null);
   },
-  // Échap, par étapes : désélectionner, puis fermer le tableau, puis quitter le mode dessin.
+  // Échap, par étapes : désélectionner, éteindre le projecteur, fermer le tableau,
+  // puis quitter le mode dessin.
   exit: () => {
     if (selectedShape()) toolContext.setSelection(null);
+    else if (state.spotlight) api.updateState({ spotlight: false });
     else if (state.board !== 'none') api.updateState({ board: 'none' });
     else api.updateState({ mode: 'passive' });
   },
   // W / B : ouvre le tableau, ou le ferme s'il est déjà affiché.
+  spotlight: () => api.updateState({ spotlight: !state.spotlight }),
   board: ({ board }) => api.updateState({ board: state.board === board ? 'none' : board }),
   tool: ({ tool }) => api.updateState({ tool }),
   color: ({ index }) => {
@@ -156,7 +163,13 @@ window.addEventListener(
   'wheel',
   (e) => {
     if (state.mode !== 'draw' || e.deltaY === 0) return;
-    api.updateState({ size: stepSize(state.size, e.deltaY < 0 ? 1 : -1) });
+    const direction = e.deltaY < 0 ? 1 : -1;
+    // Projecteur allumé : la molette règle son rayon plutôt que l'épaisseur.
+    if (state.spotlight) {
+      api.updateState({ spotlightRadius: stepSpotlightRadius(state.spotlightRadius, direction) });
+    } else {
+      api.updateState({ size: stepSize(state.size, direction) });
+    }
   },
   { passive: true },
 );
