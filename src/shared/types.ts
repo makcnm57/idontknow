@@ -29,6 +29,8 @@ export interface StrokeShape {
   points: StrokePoint[];
   color: string;
   size: number;
+  /** Vrai pour la souris (pas de pression réelle) : l'épaisseur suit alors la vitesse. */
+  simulatePressure: boolean;
 }
 
 /** Élément vectoriel affiché sur le canvas. Union étendue en V2 (rect, ellipse, flèche, texte…). */
