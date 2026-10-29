@@ -22,7 +22,10 @@ export function hardenWindow(win: BrowserWindow): void {
 }
 
 /** Charge une page du renderer : serveur Vite en dev, fichiers du build sinon. */
-export function loadRendererPage(win: BrowserWindow, page: 'overlay' | 'toolbar'): void {
+export function loadRendererPage(
+  win: BrowserWindow,
+  page: 'overlay' | 'toolbar' | 'settings',
+): void {
   const devServerUrl = process.env['ELECTRON_RENDERER_URL'];
   if (!app.isPackaged && devServerUrl) {
     void win.loadURL(`${devServerUrl}/${page}/index.html`);

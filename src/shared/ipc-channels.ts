@@ -2,6 +2,7 @@
  * Canaux IPC centralisés. Aucun nom de canal ne doit être écrit en dur ailleurs.
  * Convention de nommage : `domaine:action`.
  */
+import type { SettingsUpdateResult, SettingsView } from './preferences';
 import type { AppInfo, Box, DrawState, HistoryState } from './types';
 
 export const IpcChannel = {
@@ -54,6 +55,19 @@ export const IpcChannel = {
   /** overlay → main (send) : zone choisie (pixels CSS) ou `null` si annulé. */
   ZoneResult: 'zone:result',
 
+  /** renderer → main (invoke) : préférences actuelles (fenêtre Paramètres, thème de la barre). */
+  PrefsGet: 'prefs:get',
+  /** Paramètres → main (invoke) : modifier des préférences (validées, appliquées). */
+  PrefsUpdate: 'prefs:update',
+  /** Paramètres → main (invoke) : choisir le dossier des captures. */
+  PrefsChooseFolder: 'prefs:choose-folder',
+  /** Paramètres → main (send) : saisie d'un raccourci en cours (raccourcis suspendus). */
+  PrefsRecording: 'prefs:recording',
+  /** main → barre et Paramètres : préférences modifiées. */
+  PrefsChanged: 'prefs:changed',
+  /** barre d'outils → main (send) : ouvrir la fenêtre Paramètres. */
+  SettingsOpen: 'settings:open',
+
   /** main → overlay : annuler / rétablir une étape locale. */
   OverlayUndo: 'overlay:undo',
   OverlayRedo: 'overlay:redo',
@@ -70,6 +84,9 @@ export interface IpcInvokeMap {
   [IpcChannel.HistoryGet]: { args: []; result: HistoryState };
   [IpcChannel.ToolbarFocus]: { args: []; result: undefined };
   [IpcChannel.CaptureScreen]: { args: []; result: Uint8Array | null };
+  [IpcChannel.PrefsGet]: { args: []; result: SettingsView };
+  [IpcChannel.PrefsUpdate]: { args: [patch: unknown]; result: SettingsUpdateResult | null };
+  [IpcChannel.PrefsChooseFolder]: { args: []; result: SettingsUpdateResult | null };
 }
 
 /** Canaux `send` / `on` du renderer vers le main : charge utile. */
@@ -87,6 +104,8 @@ export interface IpcSendMap {
   [IpcChannel.CaptureReady]: undefined;
   [IpcChannel.ZoneCaptureTake]: undefined;
   [IpcChannel.ZoneResult]: { rect: Box | null };
+  [IpcChannel.PrefsRecording]: { active: boolean };
+  [IpcChannel.SettingsOpen]: undefined;
 }
 
 /** Événements du main vers les renderers : charge utile. */
@@ -98,4 +117,5 @@ export interface IpcEventMap {
   [IpcChannel.OverlayClear]: { groupId: string };
   [IpcChannel.OverlayCapturing]: { active: boolean };
   [IpcChannel.ZoneStart]: { png: Uint8Array };
+  [IpcChannel.PrefsChanged]: SettingsView;
 }

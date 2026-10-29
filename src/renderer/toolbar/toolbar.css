@@ -7,8 +7,34 @@
   --pressed: rgba(255, 255, 255, 0.16);
   --accent: #ff3b30;
   --passive: #6b6b78;
+  --swatch-ring: rgba(255, 255, 255, 0.25);
   font-family: system-ui, 'Segoe UI', sans-serif;
   font-size: 13px;
+}
+
+/* Thème clair : choisi dans les paramètres, ou « Comme Windows » avec Windows en clair. */
+:root[data-theme='light'] {
+  --bg: rgba(250, 250, 252, 0.96);
+  --border: rgba(0, 0, 0, 0.12);
+  --text: #1c1c1e;
+  --muted: #6b6b78;
+  --hover: rgba(0, 0, 0, 0.06);
+  --pressed: rgba(0, 0, 0, 0.1);
+  --passive: #a0a0aa;
+  --swatch-ring: rgba(0, 0, 0, 0.18);
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-theme='system'] {
+    --bg: rgba(250, 250, 252, 0.96);
+    --border: rgba(0, 0, 0, 0.12);
+    --text: #1c1c1e;
+    --muted: #6b6b78;
+    --hover: rgba(0, 0, 0, 0.06);
+    --pressed: rgba(0, 0, 0, 0.1);
+    --passive: #a0a0aa;
+    --swatch-ring: rgba(0, 0, 0, 0.18);
+  }
 }
 
 /* La fenêtre est transparente : seule la pilule de la barre est visible. */
@@ -133,7 +159,7 @@ button:disabled {
   padding: 0;
   border-radius: 50%;
   background: var(--swatch);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 0 0 1px var(--swatch-ring);
   transition: transform 0.1s;
 }
 

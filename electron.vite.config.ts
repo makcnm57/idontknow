@@ -15,11 +15,12 @@ export default defineConfig({
     root: resolve(__dirname, 'src/renderer'),
     resolve: { alias },
     build: {
-      // Deux pages distinctes : le canvas plein écran et la barre d'outils.
+      // Trois pages : le canvas plein écran, la barre d'outils et les paramètres.
       rolldownOptions: {
         input: {
           overlay: resolve(__dirname, 'src/renderer/overlay/index.html'),
           toolbar: resolve(__dirname, 'src/renderer/toolbar/index.html'),
+          settings: resolve(__dirname, 'src/renderer/settings/index.html'),
         },
       },
     },

@@ -1,3 +1,4 @@
+import type { PreferencesPatch, SettingsUpdateResult, SettingsView } from './preferences';
 import type { AppInfo, Box, DrawState, HistoryState } from './types';
 
 /**
@@ -27,6 +28,15 @@ export interface ScreenDrawApi {
   resizeToolbar(width: number): void;
   /** Déplace la fenêtre de la barre (coordonnées écran du coin haut-gauche). */
   moveToolbar(x: number, y: number): void;
+
+  // Préférences (fenêtre Paramètres ; la barre lit le thème).
+  getPreferences(): Promise<SettingsView>;
+  updatePreferences(patch: PreferencesPatch): Promise<SettingsUpdateResult | null>;
+  chooseCaptureFolder(): Promise<SettingsUpdateResult | null>;
+  onPreferencesChanged(listener: (view: SettingsView) => void): () => void;
+  /** Suspend les raccourcis globaux pendant la saisie d'une nouvelle combinaison. */
+  setShortcutRecording(active: boolean): void;
+  openSettings(): void;
 
   // Côté overlay : capture figée de son écran (loupe).
   captureScreen(): Promise<Uint8Array | null>;

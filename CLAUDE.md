@@ -134,10 +134,11 @@ La barre d'outils est une **fenêtre séparée**, petite, déplaçable, toujours
 - [x] **Capture** : écran + annotations → PNG enregistré et/ou copié dans le presse-papiers
   - *Images\ScreenDraw, avec repli sur Téléchargements\ScreenDraw si l'accès contrôlé aux dossiers de Windows Defender bloque Images (cas de la machine de dev).*
 - [x] Capture d'une zone sélectionnée (`Ctrl+Shift+X`)
-- [ ] Paramètres persistants (couleur, épaisseur, outil, raccourcis, position de la barre)
-- [ ] Raccourcis personnalisables
-- [ ] Lancement au démarrage de Windows (optionnel)
-- [ ] Thème clair / sombre de la barre d'outils
+- [x] Paramètres persistants (couleur, épaisseur, outil, raccourcis, position de la barre)
+- [x] Raccourcis personnalisables (raccourcis globaux, dans la fenêtre Paramètres)
+- [x] Lancement au démarrage de Windows (optionnel)
+  - *Appliqué uniquement par la version installée : en développement, Windows lancerait `electron.exe` seul.*
+- [x] Thème clair / sombre de la barre d'outils (clair, sombre ou comme Windows)
 
 ## 6. Raccourcis par défaut
 

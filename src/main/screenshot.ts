@@ -26,6 +26,7 @@ import { delay, withTimeout } from './async-utils';
 import { captureDisplay } from './capture';
 import { captureFileName } from './capture-file';
 import { getOverlayForDisplay } from './overlay';
+import { defaultCaptureFolder, getPreferences } from './preferences';
 import { getToolbar, setToolbarVisible } from './toolbar';
 import { sendTo } from './window-utils';
 
@@ -78,8 +79,8 @@ async function writeInto(folder: string, name: string, png: Buffer): Promise<str
   return file;
 }
 
-/** Vrai si Images a déjà refusé une écriture pendant cette session. */
-let picturesBlocked = false;
+/** Dossier choisi qui a déjà refusé une écriture pendant cette session (ou `null`). */
+let blockedFolder: string | null = null;
 
 interface SavedCapture {
   file: string;
@@ -88,19 +89,19 @@ interface SavedCapture {
 }
 
 /**
- * Enregistre dans Images\ScreenDraw ; si Windows le refuse (accès contrôlé aux dossiers
- * de Defender, qui protège Images, Documents, Bureau…), se replie sur
- * Téléchargements\ScreenDraw, non protégé par défaut. `null` si les deux échouent.
+ * Enregistre dans le dossier choisi (par défaut Images\ScreenDraw) ; si Windows le refuse
+ * (accès contrôlé aux dossiers de Defender, qui protège Images, Documents, Bureau…), se
+ * replie sur Téléchargements\ScreenDraw, non protégé par défaut. `null` si les deux échouent.
  */
 async function saveCapture(png: Buffer, name: string): Promise<SavedCapture | null> {
-  if (!picturesBlocked) {
-    const preferred = join(app.getPath('pictures'), 'ScreenDraw');
+  const preferred = getPreferences().captureFolder ?? defaultCaptureFolder();
+  // Un dossier déjà refusé n'est pas réessayé (sauf s'il a changé dans les paramètres).
+  if (preferred !== blockedFolder) {
     try {
       return { file: await writeInto(preferred, name, png), fallback: false };
     } catch (error) {
-      // Retenu pour la session : les captures suivantes n'attendent plus le délai.
-      picturesBlocked = true;
-      console.warn('[capture] dossier Images inaccessible :', error);
+      blockedFolder = preferred;
+      console.warn('[capture] dossier des captures inaccessible :', error);
     }
   }
   const fallback = join(app.getPath('downloads'), 'ScreenDraw');
@@ -159,7 +160,7 @@ export async function deliverCapture(image: NativeImage): Promise<void> {
   } else if (saved.fallback) {
     notify(
       'Capture enregistrée dans Téléchargements',
-      `Windows protège le dossier Images (accès contrôlé aux dossiers). ${name} est dans Téléchargements\\ScreenDraw et copiée.`,
+      `Windows protège le dossier des captures (accès contrôlé aux dossiers). ${name} est dans Téléchargements\\ScreenDraw et copiée.`,
       saved.file,
     );
   } else {

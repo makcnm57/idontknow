@@ -2,6 +2,7 @@
  * Point d'entrée du processus main : cycle de vie de l'application.
  */
 import { app, dialog } from 'electron';
+import { ACTION_LABELS, formatAccelerator } from '@shared/shortcuts';
 import {
   configureOverlay,
   getState,
@@ -13,9 +14,11 @@ import {
   updateState,
 } from './controller';
 import { registerIpcHandlers } from './ipc';
+import { applyLaunchAtStartup, getPreferences, onPreferencesChange } from './preferences';
 import { initOverlays } from './overlay';
 import { takeScreenshot } from './screenshot';
 import { flushSettings, loadSettings, updateSettings } from './settings';
+import { openSettingsWindow } from './settings-window';
 import { pickPersisted } from './settings-schema';
 import { startZoneCapture } from './zone-capture';
 import { registerGlobalShortcuts, unregisterGlobalShortcuts } from './shortcuts';
@@ -51,21 +54,30 @@ function start(): void {
     toggleMode,
     screenshot,
     zoneCapture,
+    shortcuts: () => getPreferences().shortcuts,
+    openSettings: openSettingsWindow,
     quit: () => app.quit(),
   };
   createTray(trayActions);
   onControllerChange(() => refreshTray(trayActions));
+  onPreferencesChange(() => refreshTray(trayActions));
+  applyLaunchAtStartup(getPreferences().launchAtStartup);
 
-  const failed = registerGlobalShortcuts({
+  const failed = registerGlobalShortcuts(getPreferences().shortcuts, {
     toggleVisible,
     toggleMode,
     screenshot,
     zoneCapture,
   });
   if (failed.length > 0) {
+    const shortcuts = getPreferences().shortcuts;
+    const list = failed
+      .map((action) => `${ACTION_LABELS[action]} : ${formatAccelerator(shortcuts[action])}`)
+      .join('\n');
     dialog.showErrorBox(
       'ScreenDraw — raccourcis indisponibles',
-      `Ces raccourcis sont déjà utilisés par une autre application :\n${failed.join('\n')}`,
+      `Ces raccourcis sont déjà utilisés par une autre application :\n${list}\n\n` +
+        "Choisissez-en d'autres dans Paramètres (menu de l'icône ScreenDraw).",
     );
   }
 

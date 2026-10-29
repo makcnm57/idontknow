@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr" data-theme="system">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+    />
+    <title>ScreenDraw — Paramètres</title>
+    <link rel="stylesheet" href="./settings.css" />
+  </head>
+  <body>
+    <main class="settings">
+      <h1>Paramètres</h1>
+
+      <section aria-labelledby="shortcuts-title">
+        <h2 id="shortcuts-title">Raccourcis globaux</h2>
+        <p class="hint">
+          Actifs même quand une autre application a le focus. Cliquez sur un raccourci puis appuyez
+          sur la nouvelle combinaison (Échap pour annuler).
+        </p>
+        <div id="shortcuts" class="shortcut-list"></div>
+      </section>
+
+      <section aria-labelledby="captures-title">
+        <h2 id="captures-title">Captures</h2>
+        <div class="row">
+          <div class="grow">
+            <div class="label">Dossier d'enregistrement</div>
+            <div id="folder-path" class="path"></div>
+          </div>
+          <button id="choose-folder" type="button">Choisir…</button>
+          <button id="default-folder" type="button" class="secondary">Par défaut</button>
+        </div>
+        <p class="hint">
+          Si Windows protège ce dossier (accès contrôlé aux dossiers), les captures sont
+          enregistrées dans Téléchargements\ScreenDraw. Elles sont toujours copiées dans le
+          presse-papiers.
+        </p>
+      </section>
+
+      <section aria-labelledby="startup-title">
+        <h2 id="startup-title">Démarrage</h2>
+        <label class="check-row">
+          <input id="startup" type="checkbox" />
+          <span>Lancer ScreenDraw au démarrage de Windows</span>
+        </label>
+        <p id="startup-note" class="hint" hidden>
+          En mode développement, ce réglage est enregistré mais n'est appliqué que par la version
+          installée.
+        </p>
+      </section>
+
+      <section aria-labelledby="theme-title">
+        <h2 id="theme-title">Apparence de la barre</h2>
+        <div class="segmented" role="radiogroup" aria-labelledby="theme-title">
+          <label
+            ><input type="radio" name="theme" value="system" /><span>Comme Windows</span></label
+          >
+          <label><input type="radio" name="theme" value="light" /><span>Clair</span></label>
+          <label><input type="radio" name="theme" value="dark" /><span>Sombre</span></label>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

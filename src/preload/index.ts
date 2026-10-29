@@ -5,6 +5,7 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron';
 import type { ScreenDrawApi } from '@shared/api';
 import { IpcChannel, type IpcEventMap, type IpcSendMap } from '@shared/ipc-channels';
+import type { SettingsUpdateResult, SettingsView } from '@shared/preferences';
 import type { AppInfo, DrawState, HistoryState } from '@shared/types';
 
 function send<C extends keyof IpcSendMap>(channel: C, payload: IpcSendMap[C]): void {
@@ -38,6 +39,15 @@ const api: ScreenDrawApi = {
   releaseToolbarFocus: () => send(IpcChannel.ToolbarRelease, undefined),
   resizeToolbar: (width) => send(IpcChannel.ToolbarResize, { width }),
   moveToolbar: (x, y) => send(IpcChannel.ToolbarMove, { x, y }),
+
+  getPreferences: (): Promise<SettingsView> => ipcRenderer.invoke(IpcChannel.PrefsGet),
+  updatePreferences: (patch): Promise<SettingsUpdateResult | null> =>
+    ipcRenderer.invoke(IpcChannel.PrefsUpdate, patch),
+  chooseCaptureFolder: (): Promise<SettingsUpdateResult | null> =>
+    ipcRenderer.invoke(IpcChannel.PrefsChooseFolder),
+  onPreferencesChanged: (listener) => subscribe(IpcChannel.PrefsChanged, listener),
+  setShortcutRecording: (active) => send(IpcChannel.PrefsRecording, { active }),
+  openSettings: () => send(IpcChannel.SettingsOpen, undefined),
 
   captureScreen: (): Promise<Uint8Array | null> => ipcRenderer.invoke(IpcChannel.CaptureScreen),
 

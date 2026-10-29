@@ -108,6 +108,7 @@ modeToggle.addEventListener('click', () => {
   api.updateState({ mode: currentState.mode === 'draw' ? 'passive' : 'draw' });
 });
 $<HTMLButtonElement>('#hide').addEventListener('click', () => api.hideOverlay());
+$<HTMLButtonElement>('#open-settings').addEventListener('click', () => api.openSettings());
 $<HTMLButtonElement>('#screenshot').addEventListener('click', () => api.takeScreenshot());
 $<HTMLButtonElement>('#zone-capture').addEventListener('click', () => api.startZoneCapture());
 
@@ -157,6 +158,13 @@ function renderHistory(history: HistoryState): void {
 // La fenêtre prend la largeur exacte de la barre (qui dépend du nombre d'outils).
 const toolbarElement = $<HTMLDivElement>('.toolbar');
 api.resizeToolbar(Math.ceil(toolbarElement.getBoundingClientRect().width));
+
+// Thème (clair / sombre / comme Windows), choisi dans les paramètres.
+const applyTheme = (view: { theme: string }): void => {
+  document.documentElement.dataset['theme'] = view.theme;
+};
+api.onPreferencesChanged(applyTheme);
+void api.getPreferences().then(applyTheme);
 
 api.onStateChanged(render);
 api.onHistoryChanged(renderHistory);

@@ -1,0 +1,183 @@
+/* Thème sombre par défaut ; clair si choisi, ou si « Comme Windows » et Windows est en clair. */
+:root {
+  --bg: #1b1b20;
+  --surface: #26262d;
+  --border: rgba(255, 255, 255, 0.1);
+  --text: #f2f2f5;
+  --muted: #9a9aa6;
+  --accent: #4f8cff;
+  --danger: #ff6b61;
+  --key-bg: #33333c;
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #f4f4f7;
+  --surface: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --text: #1c1c1e;
+  --muted: #6b6b78;
+  --accent: #2563eb;
+  --danger: #d93025;
+  --key-bg: #ececf1;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-theme='system'] {
+    --bg: #f4f4f7;
+    --surface: #ffffff;
+    --border: rgba(0, 0, 0, 0.1);
+    --text: #1c1c1e;
+    --muted: #6b6b78;
+    --accent: #2563eb;
+    --danger: #d93025;
+    --key-bg: #ececf1;
+    color-scheme: light;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font:
+    14px/1.45 system-ui,
+    'Segoe UI',
+    sans-serif;
+}
+
+.settings {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 20px 24px 32px;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+section {
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+h2 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.hint {
+  margin: 4px 0 10px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.label {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+button {
+  font: inherit;
+  color: #ffffff;
+  background: var(--accent);
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+button.secondary {
+  color: var(--text);
+  background: var(--key-bg);
+}
+
+button:focus-visible,
+input:focus-visible + span {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Raccourcis : libellé, touche cliquable, bouton de réinitialisation, message d'erreur. */
+.shortcut-list {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.shortcut-key {
+  min-width: 170px;
+  color: var(--text);
+  background: var(--key-bg);
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 13px;
+}
+
+.shortcut-key.recording {
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.shortcut-error {
+  grid-column: 1 / -1;
+  margin: -2px 0 4px;
+  color: var(--danger);
+  font-size: 12.5px;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* Choix du thème : boutons segmentés. */
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--key-bg);
+  border-radius: 9px;
+}
+
+.segmented input {
+  position: absolute;
+  opacity: 0;
+}
+
+.segmented span {
+  display: block;
+  padding: 5px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.segmented input:checked + span {
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}

@@ -3,6 +3,7 @@
  * Le fichier peut être corrompu ou modifié à la main : tout est revalidé au chargement.
  */
 import { DEFAULT_DRAW_STATE, sanitizeStatePatch } from '@shared/draw-state';
+import { DEFAULT_PREFERENCES, parsePreferences, type Preferences } from '@shared/preferences';
 import type { DrawState, Point } from '@shared/types';
 
 /**
@@ -33,6 +34,8 @@ export interface Settings {
   version: 1;
   draw: PersistedDraw;
   toolbar: ToolbarPosition | null;
+  /** Réglages de la fenêtre Paramètres (raccourcis, démarrage, dossier, thème). */
+  preferences: Preferences;
 }
 
 export function pickPersisted(state: DrawState): PersistedDraw {
@@ -45,6 +48,7 @@ export const DEFAULT_SETTINGS: Settings = {
   version: 1,
   draw: pickPersisted(DEFAULT_DRAW_STATE),
   toolbar: null,
+  preferences: DEFAULT_PREFERENCES,
 };
 
 function parseToolbar(raw: unknown): ToolbarPosition | null {
@@ -71,7 +75,12 @@ export function parseSettings(raw: unknown): Settings {
   for (const key of PERSISTED_DRAW_KEYS) {
     if (clean[key] !== undefined) Object.assign(draw, { [key]: clean[key] });
   }
-  return { version: 1, draw, toolbar: parseToolbar(input['toolbar']) };
+  return {
+    version: 1,
+    draw,
+    toolbar: parseToolbar(input['toolbar']),
+    preferences: parsePreferences(input['preferences']),
+  };
 }
 
 /** Vrai si le point est dans l'une des zones (zones de travail des écrans branchés). */

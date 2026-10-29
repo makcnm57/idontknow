@@ -2,47 +2,51 @@
  * Icône dans la zone de notification, avec menu contextuel.
  */
 import { Menu, nativeImage, Tray } from 'electron';
+import type { ShortcutMap } from '@shared/shortcuts';
 import trayIconPath from '../../resources/tray.png?asset';
 
 export interface TrayActions {
   isVisible(): boolean;
   isDrawing(): boolean;
+  /** Raccourcis actuels, affichés dans le menu (ils sont personnalisables). */
+  shortcuts(): ShortcutMap;
   toggleVisible(): void;
   toggleMode(): void;
   screenshot(): void;
   zoneCapture(): void;
+  openSettings(): void;
   quit(): void;
 }
 
 let tray: Tray | null = null;
 
 function buildMenu(actions: TrayActions): Menu {
+  const shortcuts = actions.shortcuts();
   return Menu.buildFromTemplate([
     {
       label: actions.isVisible() ? 'Masquer' : 'Afficher',
-      accelerator: 'CommandOrControl+Shift+D',
+      accelerator: shortcuts.toggleVisible,
       click: actions.toggleVisible,
     },
     {
       label: 'Mode dessin',
       type: 'checkbox',
       checked: actions.isDrawing(),
-      accelerator: 'CommandOrControl+Shift+F',
+      accelerator: shortcuts.toggleMode,
       click: actions.toggleMode,
     },
     {
       label: "Capturer l'écran",
-      accelerator: 'CommandOrControl+Shift+S',
+      accelerator: shortcuts.screenshot,
       click: actions.screenshot,
     },
     {
       label: 'Capturer une zone',
-      accelerator: 'CommandOrControl+Shift+X',
+      accelerator: shortcuts.zoneCapture,
       click: actions.zoneCapture,
     },
     { type: 'separator' },
-    // La fenêtre de paramètres arrive en V4.
-    { label: 'Paramètres…', enabled: false },
+    { label: 'Paramètres…', click: actions.openSettings },
     { type: 'separator' },
     { label: 'Quitter', click: actions.quit },
   ]);
@@ -56,7 +60,7 @@ export function createTray(actions: TrayActions): void {
   refreshTray(actions);
 }
 
-/** Reconstruit le menu pour refléter l'état courant (libellés, case cochée). */
+/** Reconstruit le menu pour refléter l'état courant (libellés, case cochée, raccourcis). */
 export function refreshTray(actions: TrayActions): void {
   tray?.setContextMenu(buildMenu(actions));
 }
