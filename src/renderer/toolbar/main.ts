@@ -105,6 +105,7 @@ modeToggle.addEventListener('click', () => {
 });
 $<HTMLButtonElement>('#hide').addEventListener('click', () => api.hideOverlay());
 $<HTMLButtonElement>('#screenshot').addEventListener('click', () => api.takeScreenshot());
+$<HTMLButtonElement>('#zone-capture').addEventListener('click', () => api.startZoneCapture());
 
 function render(state: DrawState): void {
   currentState = state;

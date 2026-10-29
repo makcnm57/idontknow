@@ -14,6 +14,7 @@ import {
 import { registerIpcHandlers } from './ipc';
 import { initOverlays } from './overlay';
 import { takeScreenshot } from './screenshot';
+import { startZoneCapture } from './zone-capture';
 import { registerGlobalShortcuts, unregisterGlobalShortcuts } from './shortcuts';
 import { createToolbar } from './toolbar';
 import { createTray, refreshTray, type TrayActions } from './tray';
@@ -34,18 +35,25 @@ function start(): void {
   initOverlays(configureOverlay);
 
   const screenshot = (): void => void takeScreenshot();
+  const zoneCapture = (): void => void startZoneCapture();
   const trayActions: TrayActions = {
     isVisible,
     isDrawing: () => getState().mode === 'draw',
     toggleVisible,
     toggleMode,
     screenshot,
+    zoneCapture,
     quit: () => app.quit(),
   };
   createTray(trayActions);
   onControllerChange(() => refreshTray(trayActions));
 
-  const failed = registerGlobalShortcuts({ toggleVisible, toggleMode, screenshot });
+  const failed = registerGlobalShortcuts({
+    toggleVisible,
+    toggleMode,
+    screenshot,
+    zoneCapture,
+  });
   if (failed.length > 0) {
     dialog.showErrorBox(
       'ScreenDraw — raccourcis indisponibles',

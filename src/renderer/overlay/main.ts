@@ -20,6 +20,7 @@ import { drawSelection } from './selection';
 import { Magnifier } from './magnifier';
 import { SizeIndicator } from './size-indicator';
 import { Spotlight } from './spotlight';
+import { ZoneSelector } from './zone-selector';
 import { getTool } from './tools/registry';
 import { laserTrail } from './tools/laser';
 import { textEditor } from './tools/text';
@@ -43,6 +44,7 @@ const history = new History<readonly Shape[]>([]);
 const sizeIndicator = new SizeIndicator();
 const spotlight = new Spotlight();
 const magnifier = new Magnifier();
+const zoneSelector = new ZoneSelector();
 
 const activeCanvas = requireCanvas('layer-active');
 const layers = new LayeredCanvas(
@@ -197,6 +199,9 @@ api.onCapturing((active) => {
   layers.invalidateActive();
   if (active) requestAnimationFrame(() => requestAnimationFrame(() => api.notifyCaptureReady()));
 });
+
+// Capture de zone : choisir le rectangle sur l'image figée, puis répondre au main.
+api.onZoneStart((png) => zoneSelector.open(png, (rect) => api.sendZoneResult(rect)));
 
 // Ordres de l'historique global.
 api.onUndoRequested(() => {

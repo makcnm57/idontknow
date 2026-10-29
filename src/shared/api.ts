@@ -1,4 +1,4 @@
-import type { AppInfo, DrawState, HistoryState } from './types';
+import type { AppInfo, Box, DrawState, HistoryState } from './types';
 
 /**
  * API exposée au renderer par le preload, via `contextBridge` sous `window.screendraw`.
@@ -35,6 +35,13 @@ export interface ScreenDrawApi {
   onCapturing(listener: (active: boolean) => void): () => void;
   /** Côté overlay : interface masquée et redessinée, prêt pour la capture. */
   notifyCaptureReady(): void;
+
+  /** Lance une capture de zone (Ctrl+Shift+X). */
+  startZoneCapture(): void;
+  /** Côté overlay : afficher l'image figée pour choisir la zone. */
+  onZoneStart(listener: (png: Uint8Array) => void): () => void;
+  /** Côté overlay : zone choisie (pixels CSS), ou `null` si annulé. */
+  sendZoneResult(rect: Box | null): void;
 
   // Côté overlay : ordres venant du main et signalement des nouvelles étapes.
   onUndoRequested(listener: () => void): () => void;

@@ -67,7 +67,9 @@ export function setToolbarVisible(visible: boolean): void {
  * affichage ou activation d'un overlay.
  */
 export function raiseToolbar(): void {
-  getToolbar()?.moveTop();
+  const win = getToolbar();
+  // Sous Windows, `moveTop` réaffiche une fenêtre masquée : on ne remonte qu'une barre visible.
+  if (win?.isVisible()) win.moveTop();
 }
 
 /**

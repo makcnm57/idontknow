@@ -2,7 +2,7 @@
  * Canaux IPC centralisés. Aucun nom de canal ne doit être écrit en dur ailleurs.
  * Convention de nommage : `domaine:action`.
  */
-import type { AppInfo, DrawState, HistoryState } from './types';
+import type { AppInfo, Box, DrawState, HistoryState } from './types';
 
 export const IpcChannel = {
   /** renderer → main (invoke) : informations sur l'application. */
@@ -45,6 +45,12 @@ export const IpcChannel = {
   OverlayCapturing: 'overlay:capturing',
   /** overlay → main (send) : interface masquée et redessinée, prêt pour la capture. */
   CaptureReady: 'capture:ready',
+  /** renderer → main (send) : lancer une capture de zone. */
+  ZoneCaptureTake: 'zone:take',
+  /** main → overlay : afficher l'image figée pour choisir la zone. */
+  ZoneStart: 'zone:start',
+  /** overlay → main (send) : zone choisie (pixels CSS) ou `null` si annulé. */
+  ZoneResult: 'zone:result',
 
   /** main → overlay : annuler / rétablir une étape locale. */
   OverlayUndo: 'overlay:undo',
@@ -76,6 +82,8 @@ export interface IpcSendMap {
   [IpcChannel.ToolbarResize]: { width: number };
   [IpcChannel.ScreenshotTake]: undefined;
   [IpcChannel.CaptureReady]: undefined;
+  [IpcChannel.ZoneCaptureTake]: undefined;
+  [IpcChannel.ZoneResult]: { rect: Box | null };
 }
 
 /** Événements du main vers les renderers : charge utile. */
@@ -86,4 +94,5 @@ export interface IpcEventMap {
   [IpcChannel.OverlayRedo]: undefined;
   [IpcChannel.OverlayClear]: { groupId: string };
   [IpcChannel.OverlayCapturing]: { active: boolean };
+  [IpcChannel.ZoneStart]: { png: Uint8Array };
 }

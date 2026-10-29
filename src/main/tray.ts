@@ -10,6 +10,7 @@ export interface TrayActions {
   toggleVisible(): void;
   toggleMode(): void;
   screenshot(): void;
+  zoneCapture(): void;
   quit(): void;
 }
 
@@ -33,6 +34,11 @@ function buildMenu(actions: TrayActions): Menu {
       label: "Capturer l'écran",
       accelerator: 'CommandOrControl+Shift+S',
       click: actions.screenshot,
+    },
+    {
+      label: 'Capturer une zone',
+      accelerator: 'CommandOrControl+Shift+X',
+      click: actions.zoneCapture,
     },
     { type: 'separator' },
     // La fenêtre de paramètres arrive en V4.

@@ -8,12 +8,14 @@ export interface GlobalShortcutActions {
   toggleVisible(): void;
   toggleMode(): void;
   screenshot(): void;
+  zoneCapture(): void;
 }
 
 const BINDINGS: Record<string, keyof GlobalShortcutActions> = {
   'CommandOrControl+Shift+D': 'toggleVisible',
   'CommandOrControl+Shift+F': 'toggleMode',
   'CommandOrControl+Shift+S': 'screenshot',
+  'CommandOrControl+Shift+X': 'zoneCapture',
 };
 
 /**

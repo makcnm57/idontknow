@@ -53,7 +53,7 @@ function waitForOverlayReady(overlay: BrowserWindow): Promise<void> {
 }
 
 /** Masque l'interface, capture l'écran, puis restaure aussitôt l'interface. */
-async function captureWithoutInterface(display: Display): Promise<NativeImage | null> {
+export async function captureWithoutInterface(display: Display): Promise<NativeImage | null> {
   const overlay = getOverlayForDisplay(display.id);
   const toolbarWasVisible = getToolbar()?.isVisible() ?? false;
   try {
@@ -120,45 +120,61 @@ function notify(title: string, body: string, file?: string): void {
   notification.show();
 }
 
+/** Une seule capture à la fois, complète ou de zone. */
 let busy = false;
 
-export async function takeScreenshot(): Promise<void> {
+/** Exécute `task` si aucune capture n'est en cours ; toute erreur est notifiée. */
+export async function exclusiveCapture(task: () => Promise<void>): Promise<void> {
   if (busy) return;
   busy = true;
   try {
-    const display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
-    const image = await captureWithoutInterface(display);
-    if (!image) {
-      notify('Capture impossible', "Windows n'a pas fourni d'image de cet écran.");
-      return;
-    }
-    const png = image.toPNG();
-    const name = captureFileName(new Date());
-
-    // Presse-papiers d'abord : l'image reste disponible même si l'enregistrement échoue.
-    // (API d'Electron 45, asynchrone et calquée sur celle du W3C.)
-    await clipboard.write([
-      new ClipboardItem({ 'image/png': new Blob([png], { type: 'image/png' }) }),
-    ]);
-
-    const saved = await saveCapture(png, name);
-    if (!saved) {
-      notify('Capture copiée', "Elle n'a pas pu être enregistrée sur le disque.");
-    } else if (saved.fallback) {
-      notify(
-        'Capture enregistrée dans Téléchargements',
-        `Windows protège le dossier Images (accès contrôlé aux dossiers). ${name} est dans Téléchargements\\ScreenDraw et copiée.`,
-        saved.file,
-      );
-    } else {
-      notify('Capture enregistrée', `${name} — copiée dans le presse-papiers`, saved.file);
-    }
+    await task();
   } catch (error) {
     console.error('[capture]', error);
     notify('Capture impossible', error instanceof Error ? error.message : String(error));
   } finally {
     busy = false;
   }
+}
+
+export function notifyNoImage(): void {
+  notify('Capture impossible', "Windows n'a pas fourni d'image de cet écran.");
+}
+
+/**
+ * Livre une image capturée : presse-papiers d'abord (l'image reste disponible même si
+ * l'enregistrement échoue), puis fichier PNG, puis notification.
+ */
+export async function deliverCapture(image: NativeImage): Promise<void> {
+  const png = image.toPNG();
+  const name = captureFileName(new Date());
+  // API presse-papiers d'Electron 45 (asynchrone, calquée sur celle du W3C).
+  await clipboard.write([
+    new ClipboardItem({ 'image/png': new Blob([png], { type: 'image/png' }) }),
+  ]);
+
+  const saved = await saveCapture(png, name);
+  if (!saved) {
+    notify('Capture copiée', "Elle n'a pas pu être enregistrée sur le disque.");
+  } else if (saved.fallback) {
+    notify(
+      'Capture enregistrée dans Téléchargements',
+      `Windows protège le dossier Images (accès contrôlé aux dossiers). ${name} est dans Téléchargements\\ScreenDraw et copiée.`,
+      saved.file,
+    );
+  } else {
+    notify('Capture enregistrée', `${name} — copiée dans le presse-papiers`, saved.file);
+  }
+}
+
+/** Capture complète de l'écran sous le curseur (Ctrl+Shift+S). */
+export function takeScreenshot(): Promise<void> {
+  return exclusiveCapture(async () => {
+    const display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
+    const image = await captureWithoutInterface(display);
+    if (image) await deliverCapture(image);
+    else notifyNoImage();
+  });
 }
 
 export function registerScreenshotHandlers(): void {

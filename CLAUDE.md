@@ -133,7 +133,7 @@ La barre d'outils est une **fenêtre séparée**, petite, déplaçable, toujours
 ### V4 — Export et confort
 - [x] **Capture** : écran + annotations → PNG enregistré et/ou copié dans le presse-papiers
   - *Images\ScreenDraw, avec repli sur Téléchargements\ScreenDraw si l'accès contrôlé aux dossiers de Windows Defender bloque Images (cas de la machine de dev).*
-- [ ] Capture d'une zone sélectionnée
+- [x] Capture d'une zone sélectionnée (`Ctrl+Shift+X`)
 - [ ] Paramètres persistants (couleur, épaisseur, outil, raccourcis, position de la barre)
 - [ ] Raccourcis personnalisables
 - [ ] Lancement au démarrage de Windows (optionnel)
@@ -161,6 +161,7 @@ La barre d'outils est une **fenêtre séparée**, petite, déplaçable, toujours
 | Undo / Redo | `Ctrl + Z` / `Ctrl + Y` |
 | Tout effacer | `Suppr` |
 | Capture | `Ctrl + Shift + S` (global) |
+| Capture d'une zone | `Ctrl + Shift + X` (global) |
 | Quitter le mode dessin | `Échap` |
 
 Les raccourcis à une lettre ne fonctionnent que quand l'overlay a le focus, jamais en global.

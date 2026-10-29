@@ -44,6 +44,9 @@ const api: ScreenDrawApi = {
   onCapturing: (listener) =>
     subscribe(IpcChannel.OverlayCapturing, ({ active }) => listener(active)),
   notifyCaptureReady: () => send(IpcChannel.CaptureReady, undefined),
+  startZoneCapture: () => send(IpcChannel.ZoneCaptureTake, undefined),
+  onZoneStart: (listener) => subscribe(IpcChannel.ZoneStart, ({ png }) => listener(png)),
+  sendZoneResult: (rect) => send(IpcChannel.ZoneResult, { rect }),
 
   onUndoRequested: (listener) => subscribe(IpcChannel.OverlayUndo, () => listener()),
   onRedoRequested: (listener) => subscribe(IpcChannel.OverlayRedo, () => listener()),

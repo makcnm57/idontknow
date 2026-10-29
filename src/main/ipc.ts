@@ -9,6 +9,7 @@ import { getState, releaseToolbarFocus, setVisible, updateState } from './contro
 import { registerCaptureHandlers } from './capture';
 import { registerHistoryHandlers } from './history-router';
 import { registerScreenshotHandlers } from './screenshot';
+import { registerZoneCaptureHandlers } from './zone-capture';
 import { beginToolbarFocus, getToolbar, resizeToolbar } from './toolbar';
 
 export function registerIpcHandlers(): void {
@@ -43,4 +44,5 @@ export function registerIpcHandlers(): void {
   registerHistoryHandlers();
   registerCaptureHandlers();
   registerScreenshotHandlers();
+  registerZoneCaptureHandlers();
 }

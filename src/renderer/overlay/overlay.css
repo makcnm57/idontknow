@@ -120,3 +120,49 @@ body.capturing .magnifier {
 body.capturing .text-editor {
   outline: none;
 }
+
+/* Capture de zone : image figée de l'écran, voile, cadre de sélection et dimensions. */
+.zone-selector {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  cursor: crosshair;
+  background-size: 100% 100%;
+}
+
+.zone-veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.zone-frame {
+  position: absolute;
+  display: none;
+  outline: 1px solid #ffffff;
+  /* Ombre géante : assombrit tout sauf la zone choisie. */
+  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.45);
+}
+
+.zone-label {
+  position: absolute;
+  display: none;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(28, 28, 34, 0.9);
+  color: #f2f2f5;
+  font:
+    12px system-ui,
+    'Segoe UI',
+    sans-serif;
+  pointer-events: none;
+}
+
+.zone-selector.selecting .zone-veil {
+  display: none;
+}
+
+.zone-selector.selecting .zone-frame,
+.zone-selector.selecting .zone-label {
+  display: block;
+}
