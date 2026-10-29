@@ -13,6 +13,7 @@ import { attachPointerInput, PEN_ERASER_BUTTON } from './input';
 import { attachKeyboard, type OverlayAction } from './keyboard';
 import { SizeIndicator } from './size-indicator';
 import { getTool } from './tools/registry';
+import { textEditor } from './tools/text';
 import type { ToolContext } from './tools/tool';
 
 const api = window.screendraw;
@@ -62,6 +63,9 @@ function render(next: DrawState): void {
   document.body.classList.toggle('mode-draw', state.mode === 'draw');
   document.documentElement.style.setProperty('--accent', state.color);
   activeCanvas.style.cursor = getTool(state.tool)?.cursor ?? 'default';
+  // La saisie en cours suit couleur et taille ; changer d'outil la valide.
+  textEditor.applyStyle(state);
+  if (state.tool !== 'text') textEditor.commit();
   // Seul l'overlay sous le curseur (celui qui a le focus) affiche l'indicateur.
   if (sizeChanged && document.hasFocus()) {
     const factor = state.tool === 'highlighter' ? HIGHLIGHTER_SIZE_FACTOR : 1;

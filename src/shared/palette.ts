@@ -25,3 +25,14 @@ export const HIGHLIGHTER_OPACITY = 0.4;
 
 /** Diamètre de la zone effacée par la gomme. */
 export const ERASER_DIAMETER = 20;
+
+/** Police du texte : identique dans la zone de saisie et dans le rendu canvas. */
+export const TEXT_FONT_FAMILY = "'Segoe UI', system-ui, sans-serif";
+
+/** Hauteur de ligne du texte, en multiple de la taille de police. */
+export const TEXT_LINE_HEIGHT = 1.25;
+
+/** Taille de police associée à l'épaisseur choisie (fin 15 px, moyen 20 px, épais 30 px). */
+export function textFontSize(size: number): number {
+  return Math.round(10 + size * 2.5);
+}

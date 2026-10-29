@@ -27,6 +27,7 @@ const COMBOS: Record<string, OverlayAction> = {
   a: { type: 'tool', tool: 'arrow' },
   r: { type: 'tool', tool: 'rect' },
   o: { type: 'tool', tool: 'ellipse' },
+  t: { type: 'tool', tool: 'text' },
 };
 
 /**
@@ -55,6 +56,9 @@ export function resolveShortcut(e: KeyInfo): OverlayAction | undefined {
 
 export function attachKeyboard(run: (action: OverlayAction) => void): void {
   window.addEventListener('keydown', (e) => {
+    // Pendant la saisie d'un texte, les touches appartiennent à la zone de saisie
+    // (taper « p » ne doit pas changer d'outil, Suppr ne doit pas tout effacer).
+    if (e.target instanceof HTMLElement && e.target.isContentEditable) return;
     const action = resolveShortcut(e);
     if (!action) return;
     e.preventDefault();

@@ -6,6 +6,7 @@ import {
   hitLine,
   hitRect,
   hitStroke,
+  hitText,
   interpolate,
 } from './hit-test';
 import { arrowHead } from './shapes/shape-geometry';
@@ -144,5 +145,25 @@ describe('hitEllipse', () => {
   it('gère une ellipse aplatie comme un segment', () => {
     const flat = { ...circle, height: 0 };
     expect(hitEllipse(flat, { x: 50, y: 3 }, 4)).toBe(true);
+  });
+});
+
+describe('hitText', () => {
+  const text = {
+    id: 't',
+    kind: 'text' as const,
+    text: 'Bonjour',
+    x: 10,
+    y: 10,
+    width: 80,
+    height: 25,
+    fontSize: 20,
+    color: '#000000',
+  };
+
+  it('touche la boîte du texte, marge de la gomme comprise', () => {
+    expect(hitText(text, { x: 50, y: 20 }, 0)).toBe(true);
+    expect(hitText(text, { x: 95, y: 20 }, 6)).toBe(true);
+    expect(hitText(text, { x: 120, y: 20 }, 6)).toBe(false);
   });
 });

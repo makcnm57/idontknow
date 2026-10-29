@@ -12,6 +12,7 @@ export const TOOL_IDS = [
   'arrow',
   'rect',
   'ellipse',
+  'text',
 ] as const;
 export type ToolId = (typeof TOOL_IDS)[number];
 
@@ -83,8 +84,20 @@ export interface EllipseShape extends BoxShapeBase {
 
 export type BoxShape = RectShape | EllipseShape;
 
+/**
+ * Texte, éventuellement sur plusieurs lignes. La boîte (x, y, largeur, hauteur) est
+ * mesurée à la validation : elle sert au hit-test sans avoir besoin d'un canvas.
+ */
+export interface TextShape extends Box {
+  id: string;
+  kind: 'text';
+  text: string;
+  fontSize: number;
+  color: string;
+}
+
 /** Élément vectoriel affiché sur le canvas. */
-export type Shape = StrokeShape | LineShape | RectShape | EllipseShape;
+export type Shape = StrokeShape | LineShape | RectShape | EllipseShape | TextShape;
 
 /** Réglages de dessin courants, partagés entre la barre d'outils et tous les overlays. */
 export interface DrawState {

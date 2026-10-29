@@ -10,6 +10,7 @@ import { highlighterTool } from './highlighter';
 import { lineTool } from './line';
 import { penTool } from './pen';
 import { rectTool } from './rect';
+import { textTool } from './text';
 import type { Tool } from './tool';
 
 const tools: Partial<Record<ToolId, Tool>> = {};
@@ -21,6 +22,7 @@ const ALL_TOOLS = [
   arrowTool,
   rectTool,
   ellipseTool,
+  textTool,
 ];
 for (const tool of ALL_TOOLS) tools[tool.id] = tool;
 

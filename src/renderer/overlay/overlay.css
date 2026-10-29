@@ -43,3 +43,19 @@ body.mode-draw {
   opacity: 1;
   transition: none;
 }
+
+/* Zone de saisie de l'outil Texte : même police et interlignage que le rendu canvas. */
+.text-editor {
+  position: absolute;
+  z-index: 1;
+  min-width: 4px;
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  background: transparent;
+  caret-color: currentColor;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.45);
+  outline: 1px dashed currentColor;
+  outline-offset: 4px;
+  cursor: text;
+}

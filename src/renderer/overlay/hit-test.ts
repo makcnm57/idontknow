@@ -1,7 +1,15 @@
 /**
  * Hit-test des formes (logique pure) : la gomme supprime les éléments touchés.
  */
-import type { EllipseShape, LineShape, Point, RectShape, Shape, StrokeShape } from '@shared/types';
+import type {
+  EllipseShape,
+  LineShape,
+  Point,
+  RectShape,
+  Shape,
+  StrokeShape,
+  TextShape,
+} from '@shared/types';
 import { arrowHead } from './shapes/shape-geometry';
 
 export type { Point };
@@ -117,6 +125,16 @@ export function hitEllipse(shape: EllipseShape, p: Point, radius: number): boole
   return Math.abs(normalized - 1) * Math.min(rx, ry) <= reach;
 }
 
+/** Texte : sa boîte mesurée à la validation. */
+export function hitText(shape: TextShape, p: Point, radius: number): boolean {
+  return (
+    p.x >= shape.x - radius &&
+    p.x <= shape.x + shape.width + radius &&
+    p.y >= shape.y - radius &&
+    p.y <= shape.y + shape.height + radius
+  );
+}
+
 const hitTesters: {
   [K in Shape['kind']]: (shape: Extract<Shape, { kind: K }>, p: Point, radius: number) => boolean;
 } = {
@@ -124,6 +142,7 @@ const hitTesters: {
   line: hitLine,
   rect: hitRect,
   ellipse: hitEllipse,
+  text: hitText,
 };
 
 type HitTester = (shape: Shape, p: Point, radius: number) => boolean;
