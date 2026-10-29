@@ -102,17 +102,17 @@ La barre d'outils est une **fenêtre séparée**, petite, déplaçable, toujours
 ## 5. Fonctionnalités
 
 ### V1 — MVP (à faire en premier)
-- [ ] Overlay transparent plein écran, activable/désactivable par raccourci global
-- [ ] Mode dessin / mode passif (click-through)
-- [ ] **Stylo** (perfect-freehand, sensible à la pression)
-- [ ] **Surligneur** (semi-transparent, trait large, mode de fusion `multiply`)
-- [ ] **Gomme** (supprime l'élément touché, pas les pixels)
-- [ ] Palette de couleurs (8 couleurs prédéfinies + sélecteur personnalisé)
-- [ ] Épaisseur du trait (3 tailles + molette pour ajuster)
-- [ ] Undo / redo (Ctrl+Z / Ctrl+Y)
-- [ ] Tout effacer
-- [ ] Barre d'outils déplaçable
-- [ ] Icône dans la zone de notification avec menu (Afficher, Paramètres, Quitter)
+- [x] Overlay transparent plein écran, activable/désactivable par raccourci global
+- [x] Mode dessin / mode passif (click-through)
+- [x] **Stylo** (perfect-freehand, sensible à la pression)
+- [x] **Surligneur** (semi-transparent, trait large, mode de fusion `multiply`)
+- [x] **Gomme** (supprime l'élément touché, pas les pixels)
+- [x] Palette de couleurs (8 couleurs prédéfinies + sélecteur personnalisé)
+- [x] Épaisseur du trait (3 tailles + molette pour ajuster)
+- [x] Undo / redo (Ctrl+Z / Ctrl+Y)
+- [x] Tout effacer
+- [x] Barre d'outils déplaçable
+- [x] Icône dans la zone de notification avec menu (Afficher, Paramètres, Quitter)
 
 ### V2 — Formes et texte
 - [ ] **Ligne**, **flèche**, **rectangle**, **ellipse** (Shift = contraindre : ligne droite à 45°, carré, cercle)
