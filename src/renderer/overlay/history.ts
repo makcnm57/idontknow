@@ -36,6 +36,20 @@ export class History<T> {
     this.future = [];
   }
 
+  /**
+   * Remplace l'état courant sans créer de nouvelle étape. Sert aux gestes continus
+   * (un passage de gomme) : le premier changement fait `commit`, les suivants `amend`,
+   * et un seul Ctrl+Z annule tout le geste.
+   */
+  amend(next: T): void {
+    if (this.past.length === 0) {
+      this.commit(next);
+      return;
+    }
+    this.current = next;
+    this.future = [];
+  }
+
   /** Revient à l'état précédent. Renvoie faux s'il n'y a rien à annuler. */
   undo(): boolean {
     const previous = this.past.pop();

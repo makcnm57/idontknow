@@ -5,6 +5,7 @@ import {
   MAX_SIZE,
   MIN_SIZE,
   sanitizeStatePatch,
+  stepSize,
 } from './draw-state';
 
 describe('sanitizeStatePatch', () => {
@@ -44,5 +45,21 @@ describe('applyStatePatch', () => {
     expect(applyStatePatch(DEFAULT_DRAW_STATE, { tool: DEFAULT_DRAW_STATE.tool })).toBe(
       DEFAULT_DRAW_STATE,
     );
+  });
+});
+
+describe('stepSize', () => {
+  it('augmente et diminue par crans', () => {
+    expect(stepSize(4, 1)).toBe(5);
+    expect(stepSize(4, -1)).toBe(3);
+  });
+
+  it('agrandit le pas pour les grandes tailles', () => {
+    expect(stepSize(40, 1)).toBe(46);
+  });
+
+  it('reste dans les bornes', () => {
+    expect(stepSize(MIN_SIZE, -1)).toBe(MIN_SIZE);
+    expect(stepSize(MAX_SIZE, 1)).toBe(MAX_SIZE);
   });
 });

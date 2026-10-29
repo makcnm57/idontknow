@@ -2,12 +2,14 @@
  * Overlay de dessin : assemble l'état, l'historique, les calques et les entrées.
  * Chaque écran a son propre overlay, donc sa propre liste de formes et son historique.
  */
-import { DEFAULT_DRAW_STATE } from '@shared/draw-state';
+import { DEFAULT_DRAW_STATE, stepSize } from '@shared/draw-state';
+import { HIGHLIGHTER_SIZE_FACTOR, PALETTE } from '@shared/palette';
 import type { DrawState, Shape } from '@shared/types';
 import { LayeredCanvas, watchPixelRatio } from './canvas';
 import { History } from './history';
-import { attachPointerInput } from './input';
-import { attachKeyboard } from './keyboard';
+import { attachPointerInput, PEN_ERASER_BUTTON } from './input';
+import { attachKeyboard, type OverlayAction } from './keyboard';
+import { SizeIndicator } from './size-indicator';
 import { getTool } from './tools/registry';
 import type { ToolContext } from './tools/tool';
 
@@ -22,6 +24,7 @@ function requireCanvas(id: string): HTMLCanvasElement {
 let state: DrawState = DEFAULT_DRAW_STATE;
 let preview: Shape | null = null;
 const history = new History<readonly Shape[]>([]);
+const sizeIndicator = new SizeIndicator();
 
 const activeCanvas = requireCanvas('layer-active');
 const layers = new LayeredCanvas(
@@ -40,6 +43,10 @@ const toolContext: ToolContext = {
     history.commit(next);
     layers.invalidateCommitted();
   },
+  amendShapes(next) {
+    history.amend(next);
+    layers.invalidateCommitted();
+  },
   setPreview(shape) {
     preview = shape;
     layers.invalidateActive();
@@ -47,15 +54,24 @@ const toolContext: ToolContext = {
 };
 
 function render(next: DrawState): void {
+  const sizeChanged = next.size !== state.size;
   state = next;
   document.body.classList.toggle('mode-draw', state.mode === 'draw');
   document.documentElement.style.setProperty('--accent', state.color);
   activeCanvas.style.cursor = getTool(state.tool)?.cursor ?? 'default';
+  // Seul l'overlay sous le curseur (celui qui a le focus) affiche l'indicateur.
+  if (sizeChanged && document.hasFocus()) {
+    const factor = state.tool === 'highlighter' ? HIGHLIGHTER_SIZE_FACTOR : 1;
+    sizeIndicator.show(state.size * factor, state.color);
+  }
 }
 
-attachPointerInput(activeCanvas, () => getTool(state.tool), toolContext);
+/** Exécution des raccourcis : une entrée par type d'action. */
+type ActionHandlers = {
+  [K in OverlayAction['type']]: (action: Extract<OverlayAction, { type: K }>) => void;
+};
 
-attachKeyboard({
+const actions: ActionHandlers = {
   undo: () => {
     if (history.undo()) layers.invalidateCommitted();
   },
@@ -63,9 +79,37 @@ attachKeyboard({
     if (history.redo()) layers.invalidateCommitted();
   },
   // « Tout effacer » est une étape d'historique comme une autre : Ctrl+Z la rattrape.
-  clearAll: () => toolContext.commitShapes([]),
-  exitDrawMode: () => api.updateState({ mode: 'passive' }),
+  clear: () => {
+    if (history.present.length > 0) toolContext.commitShapes([]);
+  },
+  exit: () => api.updateState({ mode: 'passive' }),
+  tool: ({ tool }) => api.updateState({ tool }),
+  color: ({ index }) => {
+    const color = PALETTE[index];
+    if (color) api.updateState({ color });
+  },
+};
+
+attachKeyboard((action) => {
+  (actions[action.type] as (a: OverlayAction) => void)(action);
 });
+
+// Le bout gomme d'un stylet efface, quel que soit l'outil sélectionné.
+attachPointerInput(
+  activeCanvas,
+  (e) => getTool(e.button === PEN_ERASER_BUTTON ? 'eraser' : state.tool),
+  toolContext,
+);
+
+// Molette : ajuste la taille du trait (vers le haut = plus épais).
+window.addEventListener(
+  'wheel',
+  (e) => {
+    if (state.mode !== 'draw' || e.deltaY === 0) return;
+    api.updateState({ size: stepSize(state.size, e.deltaY < 0 ? 1 : -1) });
+  },
+  { passive: true },
+);
 
 window.addEventListener('resize', () => layers.resize());
 watchPixelRatio(() => layers.resize());

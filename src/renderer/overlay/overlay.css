@@ -26,3 +26,20 @@ body.mode-draw {
   box-shadow: inset 0 0 0 3px var(--accent, #ff3b30);
   cursor: crosshair;
 }
+
+/* Cercle de prévisualisation de la taille (molette). */
+.size-indicator {
+  position: absolute;
+  box-sizing: border-box;
+  border: 2px solid var(--indicator-color, #ff3b30);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.size-indicator.visible {
+  opacity: 1;
+  transition: none;
+}

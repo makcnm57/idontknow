@@ -1,6 +1,7 @@
 /**
- * Rendu canvas d'un tracé à main levée.
+ * Rendu canvas d'un tracé à main levée (stylo ou surligneur).
  */
+import { HIGHLIGHTER_OPACITY } from '@shared/palette';
 import type { StrokeShape } from '@shared/types';
 import { outlineToSvgPath, strokeOutline } from './stroke-geometry';
 
@@ -24,6 +25,15 @@ export function drawStroke(
     path = buildPath(shape, complete);
     if (complete) pathCache.set(shape, path);
   }
+
+  ctx.save();
+  if (shape.tool === 'highlighter') {
+    // Le contour est un seul polygone : un trait qui se recoupe ne fonce pas.
+    // `multiply` ne s'applique qu'entre annotations : le canvas ne voit pas le bureau.
+    ctx.globalAlpha = HIGHLIGHTER_OPACITY;
+    ctx.globalCompositeOperation = 'multiply';
+  }
   ctx.fillStyle = shape.color;
   ctx.fill(path);
+  ctx.restore();
 }

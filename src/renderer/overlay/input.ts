@@ -3,22 +3,26 @@
  */
 import type { Tool, ToolContext } from './tools/tool';
 
+/** Bouton « gomme » d'un stylet (bout arrière), selon la spécification Pointer Events. */
+export const PEN_ERASER_BUTTON = 5;
+
 /**
  * Branche les Pointer Events sur `target`.
- * Un seul pointeur est suivi à la fois ; l'outil est figé au début du geste.
+ * Un seul pointeur est suivi à la fois ; l'outil est choisi au début du geste
+ * (`pickTool` reçoit l'événement pour détecter le bout gomme du stylet).
  */
 export function attachPointerInput(
   target: HTMLElement,
-  getTool: () => Tool | undefined,
+  pickTool: (e: PointerEvent) => Tool | undefined,
   ctx: ToolContext,
 ): void {
   let activePointer: number | null = null;
   let activeTool: Tool | undefined;
 
   target.addEventListener('pointerdown', (e) => {
-    // Souris : bouton gauche uniquement. Stylet et tactile : contact principal.
-    if (activePointer !== null || e.button !== 0) return;
-    activeTool = getTool();
+    // Bouton principal (souris gauche, pointe du stylet, doigt) ou bout gomme du stylet.
+    if (activePointer !== null || (e.button !== 0 && e.button !== PEN_ERASER_BUTTON)) return;
+    activeTool = pickTool(e);
     if (!activeTool) return;
     activePointer = e.pointerId;
     target.setPointerCapture(e.pointerId);

@@ -1,21 +1,53 @@
 import { describe, expect, it } from 'vitest';
-import { comboOf } from './keyboard';
+import { comboOf, resolveShortcut } from './keyboard';
 
-const key = (k: string, mods: { ctrl?: boolean; shift?: boolean; meta?: boolean } = {}) => ({
+interface Mods {
+  ctrl?: boolean;
+  shift?: boolean;
+  meta?: boolean;
+  alt?: boolean;
+}
+
+const key = (k: string, code = '', mods: Mods = {}) => ({
   key: k,
+  code,
   ctrlKey: mods.ctrl ?? false,
   shiftKey: mods.shift ?? false,
   metaKey: mods.meta ?? false,
+  altKey: mods.alt ?? false,
 });
 
 describe('comboOf', () => {
   it('normalise la casse et les modificateurs', () => {
-    expect(comboOf(key('z', { ctrl: true }))).toBe('ctrl+z');
-    expect(comboOf(key('Z', { ctrl: true, shift: true }))).toBe('ctrl+shift+z');
+    expect(comboOf(key('z', 'KeyW', { ctrl: true }))).toBe('ctrl+z');
+    expect(comboOf(key('Z', 'KeyW', { ctrl: true, shift: true }))).toBe('ctrl+shift+z');
     expect(comboOf(key('Delete'))).toBe('delete');
   });
 
   it('traite Cmd (macOS) comme Ctrl', () => {
-    expect(comboOf(key('y', { meta: true }))).toBe('ctrl+y');
+    expect(comboOf(key('y', 'KeyY', { meta: true }))).toBe('ctrl+y');
+  });
+});
+
+describe('resolveShortcut', () => {
+  it('reconnaît Ctrl+Z sur la lettre Z en AZERTY (touche physique W)', () => {
+    expect(resolveShortcut(key('z', 'KeyW', { ctrl: true }))).toEqual({ type: 'undo' });
+  });
+
+  it('sélectionne les outils par leur lettre', () => {
+    expect(resolveShortcut(key('p', 'KeyP'))).toEqual({ type: 'tool', tool: 'pen' });
+    expect(resolveShortcut(key('H', 'KeyH', { shift: true }))).toBeUndefined();
+    expect(resolveShortcut(key('e', 'KeyE'))).toEqual({ type: 'tool', tool: 'eraser' });
+  });
+
+  it('choisit la couleur par la touche physique, même en AZERTY sans Maj', () => {
+    expect(resolveShortcut(key('&', 'Digit1'))).toEqual({ type: 'color', index: 0 });
+    expect(resolveShortcut(key('8', 'Numpad8'))).toEqual({ type: 'color', index: 7 });
+    expect(resolveShortcut(key('ç', 'Digit9'))).toBeUndefined();
+  });
+
+  it('ignore les combinaisons avec AltGr (Ctrl+Alt)', () => {
+    expect(resolveShortcut(key('z', 'KeyW', { ctrl: true, alt: true }))).toBeUndefined();
+    expect(resolveShortcut(key('2', 'Digit2', { ctrl: true, alt: true }))).toBeUndefined();
   });
 });

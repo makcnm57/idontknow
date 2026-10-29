@@ -2,6 +2,7 @@
  * État de dessin : valeurs par défaut et validation des modifications.
  * Les patchs arrivent du renderer par IPC : on ne leur fait pas confiance aveuglément.
  */
+import { PALETTE, SIZE_PRESETS } from './palette';
 import { TOOL_IDS, type DrawState, type InteractionMode, type ToolId } from './types';
 
 export const MIN_SIZE = 1;
@@ -9,10 +10,19 @@ export const MAX_SIZE = 64;
 
 export const DEFAULT_DRAW_STATE: DrawState = {
   tool: 'pen',
-  color: '#ff3b30',
-  size: 4,
+  color: PALETTE[0],
+  size: SIZE_PRESETS[1],
   mode: 'passive',
 };
+
+/**
+ * Taille suivante pour un cran de molette (`direction` : +1 ou -1).
+ * Le pas grandit avec la taille pour rester perceptible sur les gros traits.
+ */
+export function stepSize(size: number, direction: 1 | -1): number {
+  const step = Math.max(1, Math.round(size * 0.15));
+  return Math.min(MAX_SIZE, Math.max(MIN_SIZE, size + direction * step));
+}
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 

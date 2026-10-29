@@ -7,14 +7,12 @@ import type { StrokeShape } from '@shared/types';
 
 /** Options perfect-freehand d'un tracé. `complete` : tracé terminé (fin du trait finalisée). */
 export function strokeOptions(shape: StrokeShape, complete: boolean): StrokeOptions {
-  return {
-    size: shape.size,
-    thinning: 0.5,
-    smoothing: 0.5,
-    streamline: 0.5,
-    simulatePressure: shape.simulatePressure,
-    last: complete,
-  };
+  const common = { size: shape.size, smoothing: 0.5, streamline: 0.5, last: complete };
+  if (shape.tool === 'highlighter') {
+    // Surligneur : largeur constante, la pression et la vitesse n'ont aucun effet.
+    return { ...common, thinning: 0, simulatePressure: false };
+  }
+  return { ...common, thinning: 0.5, simulatePressure: shape.simulatePressure };
 }
 
 /** Contour du tracé : liste de sommets [x, y]. */
