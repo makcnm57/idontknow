@@ -25,6 +25,8 @@ export interface ScreenDrawApi {
   releaseToolbarFocus(): void;
   /** Ajuste la largeur de la fenêtre de la barre à son contenu. */
   resizeToolbar(width: number): void;
+  /** Déplace la fenêtre de la barre (coordonnées écran du coin haut-gauche). */
+  moveToolbar(x: number, y: number): void;
 
   // Côté overlay : capture figée de son écran (loupe).
   captureScreen(): Promise<Uint8Array | null>;

@@ -5,6 +5,7 @@
  */
 import { PALETTE, SIZE_PRESETS } from '@shared/palette';
 import { attachColorPicker } from './color-picker';
+import { attachDragHandle } from './drag';
 import { TOOL_IDS, type DrawState, type HistoryState, type ToolId } from '@shared/types';
 
 const api = window.screendraw;
@@ -20,6 +21,9 @@ const SIZE_LABELS = ['Fin', 'Moyen', 'Épais'];
 const SIZE_DOTS = [5, 9, 13];
 
 let currentState: DrawState | null = null;
+
+// --- Poignée de déplacement.
+attachDragHandle($<HTMLDivElement>('.drag-handle'), (x, y) => api.moveToolbar(x, y));
 
 // --- Outils : choisir un outil passe en mode dessin (on veut alors dessiner).
 const toolButtons = new Map<ToolId, HTMLButtonElement>();

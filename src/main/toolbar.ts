@@ -5,6 +5,7 @@
  * (les raccourcis clavier continuent de fonctionner) ni à l'application en cours.
  */
 import { BrowserWindow, screen } from 'electron';
+import { isOnSomeScreen, type ToolbarPosition } from './settings-schema';
 import { hardenWindow, loadRendererPage, secureWebPreferences } from './window-utils';
 
 /** Largeur initiale ; ajustée ensuite au contenu par `resizeToolbar`. */
@@ -14,15 +15,43 @@ const MAX_WIDTH = 2000;
 const HEIGHT = 52;
 const TOP_MARGIN = 16;
 
-let toolbar: BrowserWindow | null = null;
+/**
+ * Centre horizontal d'une fenêtre, en entier. Tous les calculs de centre utilisent cette
+ * même convention (demi-largeur arrondie à l'inférieur) : sinon, avec une largeur impaire,
+ * la barre se décalerait d'un pixel à chaque lancement.
+ */
+const centerOf = (x: number, width: number): number => x + Math.floor(width / 2);
+const leftFor = (centerX: number, width: number): number =>
+  Math.round(centerX) - Math.floor(width / 2);
 
-export function createToolbar(): BrowserWindow {
+let toolbar: BrowserWindow | null = null;
+let onToolbarMoved: (position: ToolbarPosition) => void = () => {};
+
+/**
+ * Position de départ : celle enregistrée si elle tombe encore sur un écran branché,
+ * sinon en haut au centre de l'écran principal.
+ */
+function initialPosition(saved: ToolbarPosition | null): ToolbarPosition {
+  const areas = screen.getAllDisplays().map((d) => d.workArea);
+  if (saved && isOnSomeScreen({ x: saved.centerX, y: saved.y + HEIGHT / 2 }, areas)) return saved;
   const { workArea } = screen.getPrimaryDisplay();
+  return { centerX: centerOf(workArea.x, workArea.width), y: workArea.y + TOP_MARGIN };
+}
+
+/**
+ * Crée la barre. `onMoved` reçoit sa nouvelle position après chaque déplacement
+ * par la poignée (pour l'enregistrer dans les paramètres).
+ */
+export function createToolbar(
+  saved: ToolbarPosition | null,
+  onMoved: (position: ToolbarPosition) => void,
+): BrowserWindow {
+  const start = initialPosition(saved);
   toolbar = new BrowserWindow({
     width: WIDTH,
     height: HEIGHT,
-    x: Math.round(workArea.x + (workArea.width - WIDTH) / 2),
-    y: workArea.y + TOP_MARGIN,
+    x: leftFor(start.centerX, WIDTH),
+    y: Math.round(start.y),
     transparent: true,
     backgroundColor: '#00000000',
     frame: false,
@@ -40,6 +69,7 @@ export function createToolbar(): BrowserWindow {
   toolbar.setAlwaysOnTop(true, 'screen-saver');
   toolbar.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   toolbar.on('closed', () => (toolbar = null));
+  onToolbarMoved = onMoved;
   hardenWindow(toolbar);
   loadRendererPage(toolbar, 'toolbar');
   return toolbar;
@@ -110,6 +140,18 @@ export function resizeToolbar(contentWidth: number): void {
   const width = Math.round(Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, contentWidth)));
   const bounds = win.getBounds();
   if (width === bounds.width) return;
-  const centerX = bounds.x + bounds.width / 2;
-  win.setBounds({ ...bounds, x: Math.round(centerX - width / 2), width });
+  win.setBounds({ ...bounds, x: leftFor(centerOf(bounds.x, bounds.width), width), width });
+}
+
+/**
+ * Déplacement par la poignée, piloté par le renderer. Une fenêtre non activable
+ * (`focusable: false`) ne peut pas être déplacée par Windows via `-webkit-app-region: drag` :
+ * la barre envoie donc elle-même sa position pendant le glissé.
+ */
+export function moveToolbarTo(x: number, y: number): void {
+  const win = getToolbar();
+  if (!win || !Number.isFinite(x) || !Number.isFinite(y)) return;
+  win.setPosition(Math.round(x), Math.round(y));
+  const bounds = win.getBounds();
+  onToolbarMoved({ centerX: centerOf(bounds.x, bounds.width), y: bounds.y });
 }

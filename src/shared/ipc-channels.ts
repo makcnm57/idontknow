@@ -36,6 +36,8 @@ export const IpcChannel = {
   ToolbarRelease: 'toolbar:release',
   /** barre d'outils → main : largeur de son contenu, pour ajuster la fenêtre. */
   ToolbarResize: 'toolbar:resize',
+  /** barre d'outils → main : nouvelle position pendant un déplacement par la poignée. */
+  ToolbarMove: 'toolbar:move',
 
   /** overlay → main (invoke) : capture PNG de son écran (loupe). */
   CaptureScreen: 'capture:screen',
@@ -80,6 +82,7 @@ export interface IpcSendMap {
   [IpcChannel.HistoryCommitted]: { groupId?: string };
   [IpcChannel.ToolbarRelease]: undefined;
   [IpcChannel.ToolbarResize]: { width: number };
+  [IpcChannel.ToolbarMove]: { x: number; y: number };
   [IpcChannel.ScreenshotTake]: undefined;
   [IpcChannel.CaptureReady]: undefined;
   [IpcChannel.ZoneCaptureTake]: undefined;

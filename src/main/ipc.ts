@@ -10,7 +10,7 @@ import { registerCaptureHandlers } from './capture';
 import { registerHistoryHandlers } from './history-router';
 import { registerScreenshotHandlers } from './screenshot';
 import { registerZoneCaptureHandlers } from './zone-capture';
-import { beginToolbarFocus, getToolbar, resizeToolbar } from './toolbar';
+import { beginToolbarFocus, getToolbar, moveToolbarTo, resizeToolbar } from './toolbar';
 
 export function registerIpcHandlers(): void {
   ipcMain.handle(IpcChannel.AppInfo, (): AppInfo => ({
@@ -39,6 +39,10 @@ export function registerIpcHandlers(): void {
   ipcMain.on(IpcChannel.ToolbarResize, (event, payload: unknown) => {
     const width = (payload as { width?: unknown } | null)?.width;
     if (fromToolbar(event) && typeof width === 'number') resizeToolbar(width);
+  });
+  ipcMain.on(IpcChannel.ToolbarMove, (event, payload: unknown) => {
+    const { x, y } = (payload ?? {}) as { x?: unknown; y?: unknown };
+    if (fromToolbar(event) && typeof x === 'number' && typeof y === 'number') moveToolbarTo(x, y);
   });
 
   registerHistoryHandlers();

@@ -37,6 +37,7 @@ const api: ScreenDrawApi = {
   requestToolbarFocus: (): Promise<void> => ipcRenderer.invoke(IpcChannel.ToolbarFocus),
   releaseToolbarFocus: () => send(IpcChannel.ToolbarRelease, undefined),
   resizeToolbar: (width) => send(IpcChannel.ToolbarResize, { width }),
+  moveToolbar: (x, y) => send(IpcChannel.ToolbarMove, { x, y }),
 
   captureScreen: (): Promise<Uint8Array | null> => ipcRenderer.invoke(IpcChannel.CaptureScreen),
 

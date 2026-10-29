@@ -49,15 +49,19 @@ body {
   background: var(--border);
 }
 
-/* Zone de déplacement de la fenêtre (frameless). */
+/* Poignée de déplacement (glissé géré en JavaScript, voir drag.ts). */
 .drag-handle {
-  -webkit-app-region: drag;
+  touch-action: none;
   align-self: stretch;
   display: grid;
   place-content: center;
   gap: 3px;
   width: 18px;
   cursor: grab;
+}
+
+.drag-handle.dragging {
+  cursor: grabbing;
 }
 
 .drag-handle span {
@@ -70,7 +74,6 @@ body {
 
 button,
 .swatch {
-  -webkit-app-region: no-drag;
   font: inherit;
   color: inherit;
   background: transparent;

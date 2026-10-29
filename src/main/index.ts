@@ -10,10 +10,13 @@ import {
   setVisible,
   toggleMode,
   toggleVisible,
+  updateState,
 } from './controller';
 import { registerIpcHandlers } from './ipc';
 import { initOverlays } from './overlay';
 import { takeScreenshot } from './screenshot';
+import { flushSettings, loadSettings, updateSettings } from './settings';
+import { pickPersisted } from './settings-schema';
 import { startZoneCapture } from './zone-capture';
 import { registerGlobalShortcuts, unregisterGlobalShortcuts } from './shortcuts';
 import { createToolbar } from './toolbar';
@@ -31,7 +34,12 @@ function start(): void {
   app.setAppUserModelId('com.kawa.screendraw');
   registerIpcHandlers();
 
-  createToolbar();
+  // Préférences de la session précédente (validées au chargement).
+  const settings = loadSettings();
+  updateState(settings.draw);
+  onControllerChange(() => updateSettings({ draw: pickPersisted(getState()) }));
+
+  createToolbar(settings.toolbar, (toolbar) => updateSettings({ toolbar }));
   initOverlays(configureOverlay);
 
   const screenshot = (): void => void takeScreenshot();
@@ -69,4 +77,8 @@ app.on('window-all-closed', () => {
   /* rien : on quitte uniquement via le menu du tray */
 });
 
-app.on('will-quit', unregisterGlobalShortcuts);
+app.on('will-quit', () => {
+  unregisterGlobalShortcuts();
+  // Écrit immédiatement les derniers changements encore en attente.
+  flushSettings();
+});
